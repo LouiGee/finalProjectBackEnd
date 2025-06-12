@@ -1,0 +1,18 @@
+package com.example.ratifyBackend.POMicroService;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+
+@Repository
+    public interface POTempRepository extends JpaRepository<POTemp, String> {
+
+        Optional<POTemp> findTopByOrderByPoitemnumberDesc();
+
+        @Query("SELECT Count(*) FROM POTemp")
+        int POTempCount();
+
+}
