@@ -13,10 +13,13 @@ import java.time.LocalDateTime;
 @Table(name = "purchase_order_temp")
 public class POTemp {
 
-    @Id
+
     private String ponumber;
 
+    @Id
     private String poitemnumber;
+
+    private String UserId;
 
     private String Company;
     private String Item;
@@ -28,8 +31,9 @@ public class POTemp {
     @Column(nullable = true, updatable = false)
     private LocalDateTime dateRaised;
 
-    public POTemp(String Company, String Item, String Unit, int Quantity, double Price, LocalDateTime dateRaised) {
+    public POTemp(String UserId, String Company, String Item, String Unit, int Quantity, double Price, LocalDateTime dateRaised) {
 
+        this.UserId = UserId;
         this.Company = Company;
         this.Item = Item;
         this.Unit = Unit;
@@ -42,12 +46,28 @@ public class POTemp {
     public POTemp() {}
 
 
-    public String getPONumber() {
+    public String getPonumber() {
         return ponumber;
     }
 
-    public String getPOItemNumber() {
+    public void setUserId(String userId) {
+        UserId = userId;
+    }
+
+    public void setPoitemnumber(String poitemnumber) {
+        this.poitemnumber = poitemnumber;
+    }
+
+    public void setPonumber(String ponumber) {
+        this.ponumber = ponumber;
+    }
+
+    public String getPoitemnumber() {
         return poitemnumber;
+    }
+
+    public String getUserId() {
+        return UserId;
     }
 
     public String getCompany() {

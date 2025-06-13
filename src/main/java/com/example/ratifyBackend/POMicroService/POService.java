@@ -9,28 +9,27 @@ import java.util.List;
 @Service
 public class POService {
 
-    private final PORepository PORepository;
-
     @Autowired
+    private final PORepository poRepository;
 
     public POService(PORepository poRepository) {
-        this.PORepository = poRepository;
+        this.poRepository = poRepository;
     }
 
     public List<PO> getAllPO() {
-        return PORepository.findAll();
+        return poRepository.findAll();
     }
 
     public PO getPOById(String PONumber) {
-        return PORepository.findById(PONumber).orElse(null);
+        return poRepository.findById(PONumber).orElse(null);
     }
 
     public PO createPO(PO po) {
 
-        return PORepository.save(po);
+        return poRepository.save(po);
 
     }
 
-    public PO updatePO(PO po) {return PORepository.save(po);}
+    public PO updatePO(PO po) {return poRepository.save(po);}
 }
 

@@ -18,11 +18,11 @@ import java.util.List;
 @Table(name = "purchaseOrder")
 public class PO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // or UUID if preferred
-    private Long id;
+    private String UserId;
 
     private String ponumber;
+
+    @Id
     private String poitemnumber;
 
     private String Company;
@@ -36,6 +36,8 @@ public class PO {
     private LocalDateTime dateRaised;
 
     public PO(String PONumber, String POItemNumber, String Company, String Item, String Unit, int Quantity , double Price, LocalDateTime dateRaised ) {
+
+        this.UserId = UserId;
         this.ponumber = PONumber;
         this.poitemnumber = POItemNumber;
         this.Company = Company;
@@ -47,20 +49,32 @@ public class PO {
 
     }
 
+    public void setUserId(String userId) {
+        UserId = userId;
+    }
+
+    public String getUserId() {
+        return UserId;
+    }
+
+    public String getPonumber() {
+        return ponumber;
+    }
+
+    public String getPoitemnumber() {
+        return poitemnumber;
+    }
+
     public PO() {
 
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPonumber(String ponumber) {
+        this.ponumber = ponumber;
     }
 
-    public void setPONumber(String PONumber) {
-        this.ponumber = PONumber;
-    }
-
-    public void setPOItemNumber(String POItemNumber) {
-        this.poitemnumber = POItemNumber;
+    public void setPoitemnumber(String poitemnumber) {
+        this.poitemnumber = poitemnumber;
     }
 
     public void setCompany(String company) {
@@ -111,17 +125,7 @@ public class PO {
         return Company;
     }
 
-    public String getPOItemNumber() {
-        return poitemnumber;
-    }
 
-    public String getPONumber() {
-        return ponumber;
-    }
-
-    public Long getId() {
-        return id;
-    }
 }
 
 

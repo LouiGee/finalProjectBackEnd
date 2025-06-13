@@ -12,6 +12,8 @@ import java.util.Optional;
 
         Optional<POTemp> findTopByOrderByPoitemnumberDesc();
 
+        Optional<POTemp> findTopByOrderByPonumberDesc();
+
         @Query("SELECT Count(*) FROM POTemp")
         int POTempCount();
 
