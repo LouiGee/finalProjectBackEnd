@@ -144,40 +144,44 @@ public class POTempService {
 
     public void deleteTempPO(String POItemNumber) {
 
-        //Delete and reindex
+        // Extract numeric part (last 2 digits) of the PO item number
+        int deletedItemIndex = Integer.parseInt(POItemNumber.substring(POItemNumber.length() - 2));
 
-        //Make a note of the itemNumber on the POItemNumber
-        int lastItemNumber = Integer.parseInt(POItemNumber.substring(POItemNumber.length() - 2));
-
-        //Delete entry
+        // Delete the specified PO entry
         POTempRepository.deleteById(POItemNumber);
 
-        //Reindex
+        // Get all remaining PO entries
         List<POTemp> poTempsList = POTempRepository.findAll();
 
-        List<POTemp> poFilteredTempList = poTempsList.stream().
-                filter(tempPO -> {
-                    String itemNumber = tempPO.getPoitemnumber();
-                    int numberPart = Integer.parseInt(POItemNumber.substring(POItemNumber.length() - 2));
-                    return numberPart > lastItemNumber;}).
-                toList();
-                    // map other fields as needed
+        // Delete Temp Table
 
-        // reindex list
+        POTempRepository.deleteAll();
+
+        // Filter entries that had a higher index than the deleted one
+        List<POTemp> poFilteredTempList = poTempsList.stream()
+                .filter(tempPO -> {
+                    String itemNumber = tempPO.getPoitemnumber();
+                    int numberPart = Integer.parseInt(itemNumber.substring(itemNumber.length() - 2));
+                    return numberPart > deletedItemIndex;
+                })
+                .toList();
+
+        // Re-index the filtered entries
         for (POTemp tempPO : poFilteredTempList) {
-            // Example: Decrement item number
             String itemNumber = tempPO.getPoitemnumber();
-            int numberPart = Integer.parseInt(POItemNumber.substring(POItemNumber.length() - 2));
+            String prefix = itemNumber.substring(0, itemNumber.length() - 2);
+
+            int numberPart = Integer.parseInt(itemNumber.substring(itemNumber.length() - 2));
             numberPart--; // Shift down
 
-            String newItemNumber = itemNumber.substring(0, 5) +  Integer.toString(numberPart);
+            // Format as two digits with leading zero if needed
+            String newItemNumber = prefix + String.format("%02d", numberPart);
 
             tempPO.setPoitemnumber(newItemNumber);
-
             POTempRepository.save(tempPO);
         }
-
     }
+
 
     public PO updatePO(PO po) {return PORepository.save(po);}
 }

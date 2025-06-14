@@ -34,7 +34,7 @@ public class POTempController {
     }
 
     @DeleteMapping("/delete")
-    public ResponseEntity<Void> deletePOTemp(@RequestBody List<POItemNumber> poItemNumberList) {
+    public HttpStatus deletePOTemp(@RequestBody List<POItemNumber> poItemNumberList) {
 
         for (POItemNumber poItemNumber : poItemNumberList) {
 
@@ -43,7 +43,7 @@ public class POTempController {
 
         }
 
-        return ResponseEntity.noContent().build();
+        return HttpStatus.OK;
 
     }
 
