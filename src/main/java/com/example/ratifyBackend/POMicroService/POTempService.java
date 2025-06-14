@@ -3,6 +3,7 @@ package com.example.ratifyBackend.POMicroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,15 +28,17 @@ public class POTempService {
         return POTempRepository.findAll();
     }
 
-    public POTemp createTempPO(POTemp po) {
+    public POTemp createPOTemp(POTemp po) {
 
         String PONumber = generatePONumber();
 
         String POItemNumber = generatePOItemNumber();
 
-        po.setPONumber(PONumber);
+        po.setPonumber(PONumber);
 
-        po.setPOItemNumber(POItemNumber);
+        po.setPoitemnumber(POItemNumber);
+
+        po.setDateRaised(LocalDateTime.now());
 
         return POTempRepository.save(po);
 
@@ -85,7 +88,7 @@ public class POTempService {
 
         //First Entry
         if (lastPONumber.equals("Empty") && lastPOItemNumber.equals("Empty")) {
-            return "PO01A";
+            return "PO01-01";
         }
 
         // Already entries in the temp table
@@ -93,10 +96,10 @@ public class POTempService {
 
             //will not be empty
 
-            char lastChar = lastPOItemNumber.charAt(lastPOItemNumber.length() - 1);
-            char nextChar = (char)(lastChar + 1);
+            int lastNumber = Integer.parseInt(lastPOItemNumber.substring(lastPOItemNumber.length() - 2));
+            String nextNumber = String.format("%02d", lastNumber + 1);
 
-            return lastPOItemNumber.substring(0, lastPOItemNumber.length() - 1) + nextChar;
+            return lastPOItemNumber.substring(0, lastPOItemNumber.length() - 2) + nextNumber;
 
         }
 
@@ -104,7 +107,7 @@ public class POTempService {
         else if (!lastPONumber.equals("Empty") && POTempRepository.POTempCount() == 0) {
 
             int number = Integer.parseInt(lastPONumber.substring(2));
-            return String.format("PO%02d", number + 1) + "A" ;
+            return String.format("PO%02d", number + 1) + "-01" ;
 
         }
 
@@ -139,8 +142,41 @@ public class POTempService {
     }
 
 
-    public void deletePO(String PONumber) {
-        PORepository.deleteById(PONumber);
+    public void deleteTempPO(String POItemNumber) {
+
+        //Delete and reindex
+
+        //Make a note of the itemNumber on the POItemNumber
+        int lastItemNumber = Integer.parseInt(POItemNumber.substring(POItemNumber.length() - 2));
+
+        //Delete entry
+        POTempRepository.deleteById(POItemNumber);
+
+        //Reindex
+        List<POTemp> poTempsList = POTempRepository.findAll();
+
+        List<POTemp> poFilteredTempList = poTempsList.stream().
+                filter(tempPO -> {
+                    String itemNumber = tempPO.getPoitemnumber();
+                    int numberPart = Integer.parseInt(POItemNumber.substring(POItemNumber.length() - 2));
+                    return numberPart > lastItemNumber;}).
+                toList();
+                    // map other fields as needed
+
+        // reindex list
+        for (POTemp tempPO : poFilteredTempList) {
+            // Example: Decrement item number
+            String itemNumber = tempPO.getPoitemnumber();
+            int numberPart = Integer.parseInt(POItemNumber.substring(POItemNumber.length() - 2));
+            numberPart--; // Shift down
+
+            String newItemNumber = itemNumber.substring(0, 5) +  Integer.toString(numberPart);
+
+            tempPO.setPoitemnumber(newItemNumber);
+
+            POTempRepository.save(tempPO);
+        }
+
     }
 
     public PO updatePO(PO po) {return PORepository.save(po);}

@@ -15,23 +15,23 @@ public class POTempConfig {
 
         return args -> {
 
-            POTemp PO1 = new POTemp("1","Company1", "Item", "Kg", 20, 10.00, LocalDateTime.now());
-            POTemp PO2 = new POTemp("1","Company2", "Item", "Kg", 20, 10.00, LocalDateTime.now());
-            POTemp PO3 = new POTemp("1","Company3", "Item", "Kg", 20, 10.00, LocalDateTime.now());
+            POTemp PO1 = new POTemp("1","Company1", "Item", "Kg", 20, 10.00);
+            POTemp PO2 = new POTemp("1","Company2", "Item", "Kg", 20, 10.00);
+            POTemp PO3 = new POTemp("1","Company3", "Item", "Kg", 20, 10.00);
 
-            POTemp PO4 = new POTemp("1","Company4", "Item", "Kg", 20, 10.00, LocalDateTime.now());
-            POTemp PO5 = new POTemp("1","Company5", "Item", "Kg", 20, 10.00, LocalDateTime.now());
-            POTemp PO6 = new POTemp("1","Company6", "Item", "Kg", 20, 10.00, LocalDateTime.now());
+            POTemp PO4 = new POTemp("1","Company4", "Item", "Kg", 20, 10.00);
+            POTemp PO5 = new POTemp("1","Company5", "Item", "Kg", 20, 10.00);
+            POTemp PO6 = new POTemp("1","Company6", "Item", "Kg", 20, 10.00);
 
-            service.createTempPO(PO1);
-            service.createTempPO(PO2);
-            service.createTempPO(PO3);
+            service.createPOTemp(PO1);
+            service.createPOTemp(PO2);
+            service.createPOTemp(PO3);
 
             service.CopyTempPOBasket();
 
-            service.createTempPO(PO4);
-            service.createTempPO(PO5);
-            service.createTempPO(PO6);
+            service.createPOTemp(PO4);
+            service.createPOTemp(PO5);
+            service.createPOTemp(PO6);
 
         };
 

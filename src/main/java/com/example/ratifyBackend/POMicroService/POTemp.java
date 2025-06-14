@@ -31,7 +31,7 @@ public class POTemp {
     @Column(nullable = true, updatable = false)
     private LocalDateTime dateRaised;
 
-    public POTemp(String UserId, String Company, String Item, String Unit, int Quantity, double Price, LocalDateTime dateRaised) {
+    public POTemp(String UserId, String Company, String Item, String Unit, int Quantity, double Price) {
 
         this.UserId = UserId;
         this.Company = Company;
@@ -39,7 +39,6 @@ public class POTemp {
         this.Unit = Unit;
         this.Quantity = Quantity;
         this.Price = Price;
-        this.dateRaised = dateRaised;
 
     }
 
@@ -92,14 +91,6 @@ public class POTemp {
 
     public LocalDateTime getDateRaised() {
         return dateRaised;
-    }
-
-    public void setPONumber(String PONumber) {
-        this.ponumber = PONumber;
-    }
-
-    public void setPOItemNumber(String POItemNumber) {
-        this.poitemnumber = POItemNumber;
     }
 
     public void setCompany(String company) {
