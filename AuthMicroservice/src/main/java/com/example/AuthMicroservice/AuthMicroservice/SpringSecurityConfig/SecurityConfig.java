@@ -1,4 +1,4 @@
-package com.example.AuthMicroservice.AuthMicroservice.Services;
+package com.example.AuthMicroservice.AuthMicroservice.SpringSecurityConfig;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -11,14 +11,15 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-@Configuration
-@EnableWebSecurity
-@RequiredArgsConstructor
-@EnableMethodSecurity(securedEnabled = true)
+@Configuration // marks the class a configuration class
+@EnableWebSecurity // enables web security in application
+@RequiredArgsConstructor // automatically creates a constructor
+@EnableMethodSecurity(securedEnabled = true) //allows method level security annotations
+
+
 public class SecurityConfig {
 
-    private final FilterConfig filterConfig;
-
+    // marks as a bean method
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -26,9 +27,8 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(
-                                        "/api/auth"
-                                ).permitAll()
-                                .requestMatchers("/auth/register").hasRole("ADMIN")
+                                        "/api/auth/**"
+                                ).permitAll() //Specifically allows any client to access any endpoint that starts with /api/auth
                                 .anyRequest()
                                 .authenticated()
                 );

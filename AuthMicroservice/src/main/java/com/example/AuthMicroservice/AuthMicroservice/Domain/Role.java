@@ -11,8 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-@Getter
-@Setter
+@Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,18 +21,15 @@ import java.util.List;
 
 public class Role {
 
-
     @Id
     @GeneratedValue
     private Long id;
     @Column(unique = true)
     private String name;
 
-
     @ManyToMany (mappedBy = "roles")
     @JsonIgnore
     private List<User> users;
-
 
     @CreatedDate
     @Column(nullable = true, updatable = false)
@@ -44,7 +40,7 @@ public class Role {
     private LocalDateTime lastModifiedDate;
 
 
-    }
+}
 
 
 

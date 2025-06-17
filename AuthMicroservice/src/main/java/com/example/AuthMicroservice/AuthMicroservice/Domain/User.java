@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "_users")
 @EntityListeners(AuditingEntityListener.class)
+
 public class User implements UserDetails, Principal {
 
 
@@ -33,14 +34,13 @@ public class User implements UserDetails, Principal {
     private Long id;
     private String firstName;
     private String lastName;
+
     @Column(unique = true)
     private String email;
+    @Getter
     private String password;
     private boolean enabled;
     private boolean accountLocked;
-
-    @Column( length = 500)
-    private String secret;
 
     @ManyToMany(fetch = FetchType.EAGER)
     private List<Role> roles;
@@ -53,7 +53,7 @@ public class User implements UserDetails, Principal {
     @Column(nullable = false)
     private LocalDateTime lastModifiedDate;
 
-    public User( String firstname, String lastName, String email, String password, boolean isEnabled, boolean isAccountLocked, List<Role> roles, String secret) {
+    public User( String firstname, String lastName, String email, String password, boolean isEnabled, boolean isAccountLocked, List<Role> roles) {
         this.firstName = firstname;
         this.lastName = lastName;
         this.email = email;
@@ -61,7 +61,6 @@ public class User implements UserDetails, Principal {
         this.enabled = isEnabled;
         this.accountLocked = isAccountLocked;
         this.roles = roles;
-        this.secret = secret;
 
     }
 
@@ -109,7 +108,4 @@ public class User implements UserDetails, Principal {
         return enabled;
     }
 
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
 }

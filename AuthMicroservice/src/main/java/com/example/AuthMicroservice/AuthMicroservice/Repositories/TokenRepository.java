@@ -1,6 +1,6 @@
 package com.example.AuthMicroservice.AuthMicroservice.Repositories;
 
-import com.example.testing22092024.Domain.Token;
+import com.example.AuthMicroservice.AuthMicroservice.Domain.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

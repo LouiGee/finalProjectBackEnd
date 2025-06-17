@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -17,6 +19,10 @@ public class POTempController {
 
     @Autowired
     private POTempService poTempService;
+
+    private final WebClient webClient = WebClient.builder()
+            .baseUrl("http://localhost:8080")
+            .build();
 
     @GetMapping("/all")
     public ResponseEntity<List<POTemp>> getAllPOTemp() {
@@ -51,6 +57,14 @@ public class POTempController {
     public ResponseEntity<POTemp> createPOTemp(@RequestBody POTemp poTemp) {
         POTemp newPOTemp = poTempService.createPOTemp(poTemp);
         return new ResponseEntity<>(newPOTemp, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/getUserName")
+    public Mono<String> callAuthenticationService() {
+        return webClient.get()
+                .uri("/api/auth/getUserName")
+                .retrieve()
+                .bodyToMono(String.class);
     }
 
 }
