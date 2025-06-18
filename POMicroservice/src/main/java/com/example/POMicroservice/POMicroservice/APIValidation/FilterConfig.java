@@ -1,7 +1,6 @@
 package com.example.POMicroservice.POMicroservice.APIValidation;
 
 import jakarta.servlet.http.Cookie;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -16,11 +15,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 
+// This class runs before the SecurityConfig to validate the incoming request
+
 @Component
-@RequiredArgsConstructor
 public class FilterConfig extends OncePerRequestFilter {
 
     private final JwtService jwtService;
+
+    public FilterConfig(JwtService jwtService) {
+        this.jwtService = jwtService;
+        ;
+    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -28,27 +33,33 @@ public class FilterConfig extends OncePerRequestFilter {
 
         String token = null;
 
-        // Extract the token from cookies
+        // 1. Extract the jwt token from cookies
         if (request.getCookies() != null) {
             for (Cookie cookie : request.getCookies()) {
                 if ("token".equals(cookie.getName())) {
                     token = cookie.getValue();
+                    System.out.println("Token found in request: " + token);
                 }
             }
         }
 
-        if (token != null && jwtService.validateToken(token)) {
-            String username = jwtService.extractUsername(token); // or userId, depending on your payload
+        // Debug: System.out.println("Token valid: " + jwtService.isTokenValid(token));
 
-            // You can optionally set it in the Spring Security context:
+        // 2.If the token is valid i.e the username in the token is present in the database and the token is within expiration
+        if (token != null && jwtService.isTokenValid(token)) {
+
+            String username = jwtService.extractUsername(token);
+
+            // Create an authentication token that tells spring security(SecurityConfig) that the request is authenticated
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     username, null, Collections.emptyList()
             );
 
+            // Set authentication token that will allow access to restricted endpoints
             SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
-
+        // Allows request to continue through the chain of filters
         filterChain.doFilter(request, response);
     }
 }

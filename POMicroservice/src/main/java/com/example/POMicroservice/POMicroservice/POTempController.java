@@ -1,5 +1,6 @@
 package com.example.POMicroservice.POMicroservice;
 
+import com.example.POMicroservice.POMicroservice.APIValidation.AuthApiService;
 import com.example.POMicroservice.POMicroservice.DTO.POItemNumber;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +21,7 @@ public class POTempController {
     @Autowired
     private POTempService poTempService;
 
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl("http://localhost:8080")
-            .build();
+
 
     @GetMapping("/all")
     public ResponseEntity<List<POTemp>> getAllPOTemp() {
@@ -59,12 +58,5 @@ public class POTempController {
         return new ResponseEntity<>(newPOTemp, HttpStatus.CREATED);
     }
 
-    @GetMapping("/getUserName")
-    public Mono<String> callAuthenticationService() {
-        return webClient.get()
-                .uri("/api/auth/getUserName")
-                .retrieve()
-                .bodyToMono(String.class);
-    }
 
 }

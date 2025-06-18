@@ -1,5 +1,6 @@
 package com.example.AuthMicroservice;
 
+import com.example.AuthMicroservice.AuthMicroservice.DTO.GetUserRequest;
 import com.example.AuthMicroservice.AuthMicroservice.Services.AuthenticationService;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.AuthenticationRequest;
 import lombok.AllArgsConstructor;
@@ -21,14 +22,14 @@ public class AuthenticationController {
     @PostMapping("/login")
     public ResponseEntity<?> authenticate(@RequestBody AuthenticationRequest request) {
 
+        System.out.println(authenticationService.authenticate(request));
         return ResponseEntity.ok(authenticationService.authenticate(request));
 
     }
 
-    @GetMapping("/getUserName")
-    public ResponseEntity<?> getUserName(String username){
-
-        return ResponseEntity.ok(authenticationService.getUserName(username));
+    @PostMapping("/getUserName")
+    public ResponseEntity<?> getUserName(@RequestBody GetUserRequest userRequest){
+        return ResponseEntity.ok(authenticationService.usernameFound(userRequest.getUserName()));
 
     }
 

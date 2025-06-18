@@ -18,7 +18,7 @@ public class POController {
     private POService poService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<PO>> getAllPoTemp() {
+    public ResponseEntity<List<PO>> getAllPo() {
         List<PO> po = poService.getAllPO();
         return new ResponseEntity<>(po, HttpStatus.OK);
 

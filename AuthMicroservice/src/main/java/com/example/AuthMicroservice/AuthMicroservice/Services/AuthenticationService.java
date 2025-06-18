@@ -55,8 +55,10 @@ public class AuthenticationService {
     }
 
 
-    public Optional<User> getUserName(String email) {
-        return userRepository.findByEmail(email);
+    public Boolean usernameFound (String email) {
+
+        return userRepository.findByEmail(email).isPresent();
+
     }
 
 }

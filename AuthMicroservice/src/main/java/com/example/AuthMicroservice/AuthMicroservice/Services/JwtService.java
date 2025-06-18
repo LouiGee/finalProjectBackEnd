@@ -15,7 +15,7 @@ import java.util.Map;
 @Component
 public class JwtService {
 
-    //Secret key used to create a digital signature
+    //Secret key used to create a digital signature of jwt token
     private final String secretKey = "37f097b03af124dc90ca968c2865a072a0a67fd98cc4d75a1e145889fc5cdbe2";
 
     //Long dated refreshExpiration
