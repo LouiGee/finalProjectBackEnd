@@ -1,7 +1,5 @@
 package com.example.POMicroservice.POMicroservice.APIValidation;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -25,10 +23,14 @@ public class SecurityConfig {
 
     private final FilterConfig filterConfig;
 
+    // Inject filterConfig bean
     public SecurityConfig(FilterConfig filterConfig) {
         this.filterConfig = filterConfig;
     }
 
+
+    // Checks that the http request is authenticated before allowing access to endpoints
+    // Http request travels through filterConfig beforehand to determine if request is authenticated
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -41,28 +43,32 @@ public class SecurityConfig {
                                 .requestMatchers("/api/temppo/**")
                                         .authenticated()
                 )
-                                .addFilterBefore(filterConfig, UsernamePasswordAuthenticationFilter.class);
+                                .addFilterBefore(filterConfig, UsernamePasswordAuthenticationFilter.class); // run the filter before checking for authentication
         return http.build();
     }
+
+
+    // To protect users, browsers block web pages from making requests to a different origin (domain) than the one that
+    // served the web page, unless the server allows it.
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
 
-        // Allow only your frontend origin here, NO wildcard '*' because withCredentials=true
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        // Allow only your frontend origin here
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000")); // This will need to be changed in production
 
-        // Allow credentials (cookies, auth headers)
+        // Allow credentials (cookies)
         configuration.setAllowCredentials(true);
 
         // Allowed HTTP methods from client
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
         // Allowed headers sent by the client
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+        // configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
 
         // Optional: expose headers to client
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        // configuration.setExposedHeaders(Arrays.asList("Authorization"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 

@@ -2,7 +2,6 @@ package com.example.POMicroservice.POMicroservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -95,7 +94,6 @@ public class POTempService {
         else if (POTempRepository.POTempCount() > 0) {
 
             //will not be empty
-
             int lastNumber = Integer.parseInt(lastPOItemNumber.substring(lastPOItemNumber.length() - 2));
             String nextNumber = String.format("%02d", lastNumber + 1);
 
@@ -154,7 +152,6 @@ public class POTempService {
         List<POTemp> poTempsList = POTempRepository.findAll();
 
         // Delete Temp Table
-
         POTempRepository.deleteAll();
 
         // Filter entries that had a higher index than the deleted one

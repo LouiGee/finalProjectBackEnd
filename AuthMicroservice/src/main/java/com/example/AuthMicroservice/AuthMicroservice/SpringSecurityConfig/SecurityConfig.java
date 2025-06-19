@@ -28,7 +28,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(req ->
                         req.requestMatchers(
                                         "/api/auth/**"
-                                ).permitAll() //Specifically allows any client to access any endpoint that starts with /api/auth
+                                ).permitAll() //Specifically allows ANY client to access any endpoint that starts with /api/auth
                                 .anyRequest()
                                 .authenticated()
                 );

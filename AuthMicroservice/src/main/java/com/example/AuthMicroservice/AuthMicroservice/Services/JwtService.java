@@ -21,7 +21,7 @@ public class JwtService {
     //Long dated refreshExpiration
     private final long refreshExpiration = 604800000;
 
-    //Short dated refreshExpiration
+    //Short dated refreshExpiration - should really be 15 minutes
     private final long jwtExpiration = 8640000;
 
 

@@ -1,10 +1,5 @@
 package com.example.POMicroservice.POMicroservice.DTO;
 
-
-import lombok.Getter;
-import lombok.Setter;
-
-
 public class GetUserRequest {
 
     private String userName;

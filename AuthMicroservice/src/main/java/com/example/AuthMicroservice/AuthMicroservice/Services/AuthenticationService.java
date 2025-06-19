@@ -1,5 +1,3 @@
-
-
 package com.example.AuthMicroservice.AuthMicroservice.Services;
 
 import com.example.AuthMicroservice.AuthMicroservice.DTO.AuthenticationRequest;
@@ -17,6 +15,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class AuthenticationService {
 
+    // Inject beans to be used
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;

@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
 public class PO {
 
     private String UserId;
-
     private String ponumber;
 
     @Id

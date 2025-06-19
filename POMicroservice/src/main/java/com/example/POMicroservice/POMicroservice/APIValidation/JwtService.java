@@ -1,25 +1,16 @@
 package com.example.POMicroservice.POMicroservice.APIValidation;
 
 import com.example.POMicroservice.POMicroservice.DTO.GetUserRequest;
-import com.example.POMicroservice.POMicroservice.POTempController;
-import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-
-import org.springframework.security.core.userdetails.UserDetails;
 import reactor.core.publisher.Mono;
-
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Function;
-
-import static reactor.core.publisher.Signal.subscribe;
 
 
 @Service // Marks the class as a service bean

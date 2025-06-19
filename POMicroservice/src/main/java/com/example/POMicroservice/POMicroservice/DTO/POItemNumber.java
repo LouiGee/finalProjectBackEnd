@@ -1,8 +1,5 @@
 package com.example.POMicroservice.POMicroservice.DTO;
 
-import lombok.Getter;
-import lombok.Setter;
-
 public class POItemNumber {
 
     private String poitemnumber;

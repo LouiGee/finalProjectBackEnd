@@ -22,7 +22,6 @@ public class POTempController {
     private POTempService poTempService;
 
 
-
     @GetMapping("/all")
     public ResponseEntity<List<POTemp>> getAllPOTemp() {
         List<POTemp> poTemp = poTempService.getAllTempPO();
