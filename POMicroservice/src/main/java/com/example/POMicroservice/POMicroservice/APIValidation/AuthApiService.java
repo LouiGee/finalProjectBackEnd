@@ -16,7 +16,7 @@ public class AuthApiService {
     // Call authentication service to verify that user extracted from jwt token exists
     public Mono<String> callAuthenticationService(GetUserRequest getUserRequest) {
         return  webClient.post()
-                .uri("/api/auth/getUserName")
+                .uri("/api/auth/validateUserName")
                 .header("Content-Type", "application/json")
                 .bodyValue(getUserRequest)
                 .retrieve()

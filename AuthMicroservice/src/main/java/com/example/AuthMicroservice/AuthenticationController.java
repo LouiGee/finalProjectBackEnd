@@ -27,7 +27,7 @@ public class AuthenticationController {
 
     }
 
-    @PostMapping("/getUserName")
+    @PostMapping("/validateUserName")
     public ResponseEntity<?> getUserName(@RequestBody GetUserRequest userRequest){
         return ResponseEntity.ok(authenticationService.usernameFound(userRequest.getUserName()));
 
