@@ -1,9 +1,9 @@
 package com.example.AuthMicroservice.AuthMicroservice.InitialUsers;
 
 
-import com.example.AuthMicroservice.AuthMicroservice.Domain.Role;
+import com.example.AuthMicroservice.AuthMicroservice.Domain.Permission;
 import com.example.AuthMicroservice.AuthMicroservice.Domain.User;
-import com.example.AuthMicroservice.AuthMicroservice.Repositories.RoleRepository;
+import com.example.AuthMicroservice.AuthMicroservice.Repositories.PermissionRepository;
 import com.example.AuthMicroservice.AuthMicroservice.Repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
@@ -19,14 +19,14 @@ import java.util.List;
 public class InitialUsers {
 
     @Bean
-    public CommandLineRunner runnerUser(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public CommandLineRunner runnerUser(UserRepository userRepository, PermissionRepository permissionRepository, PasswordEncoder passwordEncoder, PermissionRepository permissionsRepository) {
         return args -> {
 
-            roleRepository.save(Role.builder().name("Production Analyst").build());
-            roleRepository.save(Role.builder().name("Production Manager").build());
+            permissionRepository.save(Permission.builder().name("Production Analyst").build());
+            permissionRepository.save(Permission.builder().name("Production Manager").build());
 
-            var paRoles = roleRepository.findByName("Production Analyst");
-            var pmRoles = roleRepository.findByName("Production Manager");
+            var paRole = permissionRepository.findByName("Production Analyst");
+            var pmRole = permissionRepository.findByName("Production Manager");
 
             User productionAnalyst = new User(
                     "John",
@@ -35,7 +35,7 @@ public class InitialUsers {
                     passwordEncoder.encode("Analyst12345"),
                     true,
                     false,
-                    List.of(paRoles)
+                    paRole
 
             );
 
@@ -46,7 +46,7 @@ public class InitialUsers {
                     passwordEncoder.encode("Manager12345"),
                     true,
                     false,
-                    List.of(pmRoles)
+                    pmRole
 
             );
 

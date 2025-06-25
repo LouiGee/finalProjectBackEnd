@@ -1,8 +1,12 @@
 package com.example.AuthMicroservice.AuthMicroservice.Services;
 
+import com.example.AuthMicroservice.AuthMicroservice.Domain.Token;
+import com.example.AuthMicroservice.AuthMicroservice.Repositories.TokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.security.core.GrantedAuthority;
@@ -13,6 +17,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Component
+@RequiredArgsConstructor
 public class JwtService {
 
     //Secret key used to create a digital signature of jwt token
@@ -23,6 +28,7 @@ public class JwtService {
 
     //Short dated refreshExpiration - should really be 15 minutes
     private final long jwtExpiration = 8640000;
+
 
 
     public String generateToken(
@@ -44,13 +50,17 @@ public class JwtService {
                 map(GrantedAuthority::getAuthority).
                 toList();
 
+
+
+
+
         return Jwts
                 .builder()
                 .setClaims(extraClaims) // Set claims passed through
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .claim("authorities", authorities) //Set authority claim i.e extra info about the user
+                .claim("permissions", authorities) //Set authority claim i.e extra info about the user
                 .signWith(getSignInKey()) // Digital signature
                 .compact();
     }
@@ -69,4 +79,11 @@ public class JwtService {
         return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
+    public long getRefreshExpiration() {
+        return refreshExpiration;
+    }
+
+    public long getJwtExpiration() {
+        return jwtExpiration;
+    }
 }

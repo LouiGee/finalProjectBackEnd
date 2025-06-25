@@ -15,7 +15,6 @@ import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -23,15 +22,15 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "_users")
+@Table(name = "users")
 @EntityListeners(AuditingEntityListener.class)
 
 public class User implements UserDetails, Principal {
 
 
     @Id
-    @GeneratedValue
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long userID;
     private String firstName;
     private String lastName;
 
@@ -40,10 +39,12 @@ public class User implements UserDetails, Principal {
     @Getter
     private String password;
     private boolean enabled;
-    private boolean accountLocked;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    private List<Role> roles;
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "permissionid", referencedColumnName = "permissionid")
+    private Permission permission;
+
+    private boolean accountLocked;
 
     @CreatedDate
     @Column(nullable = false, updatable = false)
@@ -53,14 +54,14 @@ public class User implements UserDetails, Principal {
     @Column(nullable = false)
     private LocalDateTime lastModifiedDate;
 
-    public User( String firstname, String lastName, String email, String password, boolean isEnabled, boolean isAccountLocked, List<Role> roles) {
+    public User( String firstname, String lastName, String email, String password, boolean isEnabled, boolean isAccountLocked, Permission permission) {
         this.firstName = firstname;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
         this.enabled = isEnabled;
         this.accountLocked = isAccountLocked;
-        this.roles = roles;
+        this.permission = permission;
 
     }
 
@@ -77,10 +78,7 @@ public class User implements UserDetails, Principal {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return this.roles
-                .stream()
-                .map(r -> new SimpleGrantedAuthority(r.getName()))
-                .collect(Collectors.toList());
+        return List.of(new SimpleGrantedAuthority(this.permission.getName()));
     }
 
     @Override
@@ -108,4 +106,7 @@ public class User implements UserDetails, Principal {
         return enabled;
     }
 
+    public Long getUserID() {
+        return userID;
+    }
 }

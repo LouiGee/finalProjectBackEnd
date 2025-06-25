@@ -2,14 +2,22 @@ package com.example.AuthMicroservice.AuthMicroservice.Services;
 
 import com.example.AuthMicroservice.AuthMicroservice.DTO.AuthenticationRequest;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.AuthenticationResponse;
+import com.example.AuthMicroservice.AuthMicroservice.DTO.RefreshTokenRequest;
+import com.example.AuthMicroservice.AuthMicroservice.Domain.Permission;
+import com.example.AuthMicroservice.AuthMicroservice.Domain.Session;
+import com.example.AuthMicroservice.AuthMicroservice.Domain.Token;
 import com.example.AuthMicroservice.AuthMicroservice.Domain.User;
+import com.example.AuthMicroservice.AuthMicroservice.Repositories.TokenRepository;
 import com.example.AuthMicroservice.AuthMicroservice.Repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import com.example.AuthMicroservice.AuthMicroservice.Repositories.SessionRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 import java.util.HashMap;
-import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +27,8 @@ public class AuthenticationService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
+    private final SessionRepository sessionRepository;
+    private final TokenRepository tokenRepository;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
@@ -36,21 +46,45 @@ public class AuthenticationService {
         //3. Extract the user from authenticationObject
         var user = ((User) authenticationObject.getPrincipal());
 
-        //4. Insert claims information into a hashmap (could theoretically be multiple claims)
+        //4. Insert email user email into claims
         claims.put("email", user.getUsername());
 
-        //5. Generate short dated Token
+        //5. Generate sessionID and insert sessionID into claims
+        sessionRepository.save(Session.builder().user(userRepository.returnUserByEmail(user.getUsername())).build());
+
+        var sessionID = sessionRepository.findMostRecentSessionIDByUserID(userRepository.returnUserByEmail(user.getUsername()));
+
+        claims.put("sessionID", sessionID);
+
+        //6. Generate short dated Token
         var jwtToken = jwtService.generateToken(claims, user);
 
-        //6. Generate long dated Token
+        //7. Generate long dated Token
         var refreshToken = jwtService.generateRefreshToken(user);
 
-        //7. Build Token
+        //8. Save token to the database
+
+        tokenRepository.save(Token.builder().authenticationToken(jwtToken)
+                                            .refreshToken(refreshToken)
+                                            .authenticationTokenExpiration(new Date(System.currentTimeMillis() + jwtService.getJwtExpiration()))
+                                            .refreshTokenExpiration(new Date(System.currentTimeMillis() + jwtService.getRefreshExpiration()))
+                                            .session(sessionRepository.findMostRecentSessionByUserID(userRepository.returnUserByEmail(user.getUsername())))
+                                            .userEmail(user.getUsername())
+                                            .userPermission(user.getAuthorities().iterator().next().getAuthority())
+                                            .tokenInUse(true)
+                                            .build());
+
+        //8. Build Token
         return AuthenticationResponse.builder()
                 .token(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
 
+    }
+
+    public AuthenticationResponse refreshToken(RefreshTokenRequest refreshRequest) {
+
+        return null;
     }
 
 
@@ -59,6 +93,7 @@ public class AuthenticationService {
         return userRepository.findByEmail(email).isPresent();
 
     }
+
 
 }
 
