@@ -1,6 +1,6 @@
 
 
-package com.example.POMicroservice.POMicroservice;
+package com.example.POMicroservice;
 
 import jakarta.persistence.*;
 import lombok.Getter;

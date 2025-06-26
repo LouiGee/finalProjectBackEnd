@@ -1,14 +1,11 @@
-package com.example.POMicroservice.POMicroservice;
+package com.example.POMicroservice;
 
-import com.example.POMicroservice.POMicroservice.APIValidation.AuthApiService;
-import com.example.POMicroservice.POMicroservice.DTO.POItemNumber;
+import com.example.POMicroservice.DTO.POItemNumber;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.List;
 

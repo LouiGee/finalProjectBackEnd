@@ -27,7 +27,7 @@ public class JwtService {
     private final long refreshExpiration = 604800000;
 
     //Short dated refreshExpiration - should really be 15 minutes
-    private final long jwtExpiration = 8640000;
+    private final long jwtExpiration = 900000;
 
     public String generateToken(
             Map<String, ?> extraClaims,

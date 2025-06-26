@@ -64,12 +64,16 @@ public class AuthenticationService {
         //6. Generate sessionID and insert sessionID into claims
         sessionRepository.save(Session.builder().user(userRepository.returnUserByEmail(user.getUsername())).build());
 
-        var sessionID = sessionRepository.findMostRecentSessionIDByUserID(userRepository.returnUserByEmail(user.getUsername()));
+        Long sessionID = sessionRepository.findMostRecentSessionIDByUserID(userRepository.returnUserByEmail(user.getUsername()));
 
         claims.put("sessionID", sessionID);
 
         //7. Generate short dated Token
         var jwtToken = jwtService.generateToken(claims, user.getEmail());
+
+        DecodedJWT jwt = com.auth0.jwt.JWT.decode(jwtToken);
+
+        System.out.println("SessionID: " + jwt.getClaim("sessionID"));
 
         //8. Generate long dated Token
         var refreshToken = jwtService.generateRefreshToken(user.getEmail());
@@ -145,9 +149,9 @@ public class AuthenticationService {
     }
 
 
-    public Boolean usernameFound (String email) {
+    public Boolean sessionFound (Long sessionID) {
 
-        return userRepository.findByEmail(email).isPresent();
+        return sessionRepository.findById(sessionID).isPresent();
 
     }
 

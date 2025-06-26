@@ -1,4 +1,4 @@
-package com.example.POMicroservice.POMicroservice;
+package com.example.POMicroservice;
 
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;

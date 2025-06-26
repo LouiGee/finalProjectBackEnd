@@ -1,4 +1,4 @@
-package com.example.POMicroservice.POMicroservice;
+package com.example.POMicroservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,13 +11,13 @@ import java.util.stream.Collectors;
 public class POTempService {
 
     @Autowired
-    private final POTempRepository POTempRepository;
+    private final com.example.POMicroservice.POTempRepository POTempRepository;
 
     @Autowired
-    private final PORepository PORepository;
+    private final com.example.POMicroservice.PORepository PORepository;
 
 
-    public POTempService(PORepository PORepository, POTempRepository POTempRepository ) {
+    public POTempService(com.example.POMicroservice.PORepository PORepository, com.example.POMicroservice.POTempRepository POTempRepository ) {
         this.PORepository = PORepository;
         this.POTempRepository = POTempRepository; ;
     }

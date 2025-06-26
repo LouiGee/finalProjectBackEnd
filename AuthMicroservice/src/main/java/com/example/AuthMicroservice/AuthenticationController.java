@@ -1,7 +1,7 @@
 package com.example.AuthMicroservice;
 
-import com.example.AuthMicroservice.AuthMicroservice.DTO.GetUserRequest;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.RefreshTokenRequest;
+import com.example.AuthMicroservice.AuthMicroservice.DTO.ValidateSessionRequest;
 import com.example.AuthMicroservice.AuthMicroservice.Services.AuthenticationService;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.AuthenticationRequest;
 import lombok.AllArgsConstructor;
@@ -34,9 +34,9 @@ public class AuthenticationController {
     }
 
 
-    @PostMapping("/validateUserName")
-    public ResponseEntity<?> getUserName(@RequestBody GetUserRequest userRequest){
-        return ResponseEntity.ok(authenticationService.usernameFound(userRequest.getUserName()));
+    @PostMapping("/validateSession")
+    public ResponseEntity<?> getUserName(@RequestBody ValidateSessionRequest sessionRequest){
+        return ResponseEntity.ok(authenticationService.sessionFound(sessionRequest.getSessionId()));
 
     }
 

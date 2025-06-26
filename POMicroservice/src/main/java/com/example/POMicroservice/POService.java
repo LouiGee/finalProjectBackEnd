@@ -1,5 +1,5 @@
 
-package com.example.POMicroservice.POMicroservice;
+package com.example.POMicroservice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

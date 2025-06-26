@@ -1,4 +1,4 @@
-package com.example.POMicroservice.POMicroservice.DTO;
+package com.example.POMicroservice.DTO;
 
 public class POItemNumber {
 

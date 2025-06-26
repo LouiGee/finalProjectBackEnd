@@ -1,12 +1,14 @@
-package com.example.POMicroservice.POMicroservice.APIValidation;
+package com.example.POMicroservice.APIValidation;
 
-import com.example.POMicroservice.POMicroservice.DTO.GetUserRequest;
-import org.springframework.stereotype.Service;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.example.POMicroservice.DTO.ValidateSessionRequest;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+
 import javax.crypto.SecretKey;
 import java.util.Date;
 import java.util.Objects;
@@ -26,9 +28,24 @@ public class JwtService {
         this.authApiService = authApiService;
     }
 
+    //Used to extractSessionID from incoming jwt token
+    public Long extractSessionID(String authenticationToken) {
+
+        System.out.println("Passed authentication token: " + authenticationToken);
+
+        DecodedJWT jwt = com.auth0.jwt.JWT.decode(authenticationToken);
+
+        System.out.println("SessionID Extracted: " +jwt.getClaim("sessionID"));
+
+        return jwt.getClaim("sessionID").asLong();
+    }
+
     //Used to extractUsername from incoming jwt token
     public String extractUsername(String token) {
-        return extractClaim(token, Claims::getSubject);
+
+        DecodedJWT jwt = com.auth0.jwt.JWT.decode(token);
+
+        return jwt.getSubject();
     }
 
     //Used to extract claims from the token e.g userName and Roles. Allows us to pass a function to access which part of the claim we want
@@ -59,30 +76,30 @@ public class JwtService {
 
 
     //Used to determine if the incoming token is valid
-    public boolean isTokenValid(String token) {
+    public boolean isSessionIdInAuthenticationTokenValid(String authenticationToken) {
 
         //1. Extract username in the token
-        final String username = extractUsername(token);
+        Long sessionID = extractSessionID(authenticationToken);
 
         // Debug: System.out.println("extractedUsername: " + username);
 
         //2. Make an APICall to the authentication microservice to see if username is stored in database
-        GetUserRequest getUserRequest = new GetUserRequest();
-        getUserRequest.setUserName(username);
+        ValidateSessionRequest validateSessionRequest = new ValidateSessionRequest();
+        validateSessionRequest.setSessionId(sessionID);
 
-        Mono<String> usernameFoundMono = authApiService.callAuthenticationService(getUserRequest);
-        String usernameFound = usernameFoundMono.block();
+        Mono<Boolean> sessionFoundMono = authApiService.validateSession(validateSessionRequest);
+        Boolean sessionFound = sessionFoundMono.block();
 
         // Debug: System.out.println("Username found: " + usernameFound);
 
         //3. Return true if provided username exists in the database and token hasnt expired
-        return (Objects.equals(usernameFound, "true")) && !isTokenExpired(token);
+        return (Objects.equals(sessionFound, true)) && isAuthenticationTokenWithinExpiration(authenticationToken);
 
     }
 
     // Helper method to isTokenValid
-    private boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+    public boolean isAuthenticationTokenWithinExpiration(String authenticationToken) {
+        return extractExpiration(authenticationToken).after(new Date());
     }
 
     // Helper method to isTokenExpired

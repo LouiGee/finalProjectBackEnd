@@ -1,12 +1,12 @@
 package com.example.AuthMicroservice.AuthMicroservice.DTO;
 
-
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class GetUserRequest {
+public class ValidateSessionRequest {
 
-    private String userName;
+    private Long sessionId;
 }
+

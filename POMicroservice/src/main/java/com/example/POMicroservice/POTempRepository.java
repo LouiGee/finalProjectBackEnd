@@ -1,4 +1,4 @@
-package com.example.POMicroservice.POMicroservice;
+package com.example.POMicroservice;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
