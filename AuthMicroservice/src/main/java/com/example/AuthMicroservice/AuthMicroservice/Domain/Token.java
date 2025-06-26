@@ -33,7 +33,7 @@ public class Token {
     private LocalDateTime createdAt;
 
     @ManyToOne
-    @JoinColumn(name = "sessionid", nullable = false)
+    @JoinColumn(name = "sessionid")
     private Session session;
 
     private String userEmail;

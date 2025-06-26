@@ -11,7 +11,7 @@ import java.util.List;
 public class AuthenticationResponse {
 
 
-    private String token;
+    private String authenticationToken;
     private String refreshToken;
 
 }

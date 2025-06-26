@@ -1,5 +1,7 @@
 package com.example.AuthMicroservice.AuthMicroservice.Services;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.AuthenticationRequest;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.AuthenticationResponse;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.RefreshTokenRequest;
@@ -13,10 +15,14 @@ import lombok.RequiredArgsConstructor;
 import com.example.AuthMicroservice.AuthMicroservice.Repositories.SessionRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Optional;
+
+import static org.springframework.security.config.Elements.JWT;
 
 
 @Service
@@ -46,24 +52,29 @@ public class AuthenticationService {
         //3. Extract the user from authenticationObject
         var user = ((User) authenticationObject.getPrincipal());
 
-        //4. Insert email user email into claims
-        claims.put("email", user.getUsername());
+        //4. Fetch authorities using userDetails class - its a list as there may be several authorities
+        var authorities = user.getAuthorities()
+                .stream().
+                map(GrantedAuthority::getAuthority).
+                toList();
 
-        //5. Generate sessionID and insert sessionID into claims
+        //5. Add permissions to the claims
+        claims.put("permission", authorities.getFirst());
+
+        //6. Generate sessionID and insert sessionID into claims
         sessionRepository.save(Session.builder().user(userRepository.returnUserByEmail(user.getUsername())).build());
 
         var sessionID = sessionRepository.findMostRecentSessionIDByUserID(userRepository.returnUserByEmail(user.getUsername()));
 
         claims.put("sessionID", sessionID);
 
-        //6. Generate short dated Token
-        var jwtToken = jwtService.generateToken(claims, user);
+        //7. Generate short dated Token
+        var jwtToken = jwtService.generateToken(claims, user.getEmail());
 
-        //7. Generate long dated Token
-        var refreshToken = jwtService.generateRefreshToken(user);
+        //8. Generate long dated Token
+        var refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
-        //8. Save token to the database
-
+        //9. Save token to the database
         tokenRepository.save(Token.builder().authenticationToken(jwtToken)
                                             .refreshToken(refreshToken)
                                             .authenticationTokenExpiration(new Date(System.currentTimeMillis() + jwtService.getJwtExpiration()))
@@ -74,17 +85,63 @@ public class AuthenticationService {
                                             .tokenInUse(true)
                                             .build());
 
-        //8. Build Token
+        //10. Build Token
         return AuthenticationResponse.builder()
-                .token(jwtToken)
+                .authenticationToken(jwtToken)
                 .refreshToken(refreshToken)
                 .build();
 
     }
 
+
+
     public AuthenticationResponse refreshToken(RefreshTokenRequest refreshRequest) {
 
-        return null;
+        //1. Extract claims
+
+        var extractedClaims = new HashMap<String, String>();
+
+        DecodedJWT jwt = com.auth0.jwt.JWT.decode(refreshRequest.getAuthenticationToken());
+
+        extractedClaims.put("permission", jwt.getClaim("permission").asString());
+        extractedClaims.put("sessionID", jwt.getClaim("sessionID").asString());
+        String subject = jwt.getSubject();
+
+        //2. Generate new authentication Token
+
+        var authenticationToken = jwtService.generateToken(extractedClaims, subject);
+
+        //3. Generate new refresh Token
+
+        var refreshToken = jwtService.generateRefreshToken(subject);
+
+        //4. Save new token
+
+        tokenRepository.save(Token.builder().authenticationToken(authenticationToken)
+                .refreshToken(refreshToken)
+                .authenticationTokenExpiration(new Date(System.currentTimeMillis() + jwtService.getJwtExpiration()))
+                .refreshTokenExpiration(new Date(System.currentTimeMillis() + jwtService.getRefreshExpiration()))
+                .session(sessionRepository.findMostRecentSessionByUserID(userRepository.returnUserByEmail(subject)))
+                .userEmail(subject)
+                .userPermission(extractedClaims.get("permission"))
+                .tokenInUse(true)
+                .build());
+
+        //5. Update previous token to not inuse
+
+        Optional<Token> previousToken = tokenRepository.findByAuthenticationToken(refreshRequest.getAuthenticationToken());
+
+        if (previousToken.isPresent()) {
+            Token token = previousToken.get();
+            token.setTokenInUse(false); // update field
+            tokenRepository.save(token); // save updated entity
+        } else {
+            throw new RuntimeException("Token not found with authenticationToken: " + refreshRequest.getAuthenticationToken());
+        }
+
+        //6. Return authentication response
+
+        return AuthenticationResponse.builder().authenticationToken(authenticationToken).refreshToken(refreshToken).build();
     }
 
 

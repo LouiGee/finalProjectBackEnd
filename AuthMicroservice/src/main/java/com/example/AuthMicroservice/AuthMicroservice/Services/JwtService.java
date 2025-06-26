@@ -29,54 +29,53 @@ public class JwtService {
     //Short dated refreshExpiration - should really be 15 minutes
     private final long jwtExpiration = 8640000;
 
-
-
     public String generateToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails
+            Map<String, ?> extraClaims,
+            String subject
     ) {
-        return buildToken(extraClaims, userDetails, jwtExpiration);
+        return buildToken(extraClaims, subject, jwtExpiration);
+    }
+
+    public String generateRefreshToken(
+            String subject
+    ) {
+        return buildToken(new HashMap<>(), subject, refreshExpiration);
     }
 
     private String buildToken(
-            Map<String, Object> extraClaims,
-            UserDetails userDetails,
+            Map<String, ?> extraClaims,
+            String subject,
             long expiration
     ) {
 
-        // Fetch authorities using userDetails class - its a list as there may be several authorities
-        var authorities = userDetails.getAuthorities()
-                .stream().
-                map(GrantedAuthority::getAuthority).
-                toList();
+        if (!extraClaims.isEmpty()) {
 
+            return Jwts
+                    .builder()
+                    .setClaims(extraClaims) // Set claims passed through
+                    .setSubject(subject)
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                    .signWith(getSignInKey()) // Digital signature
+                    .compact();
+        } else {
 
-
-
-
-        return Jwts
-                .builder()
-                .setClaims(extraClaims) // Set claims passed through
-                .setSubject(userDetails.getUsername())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + expiration))
-                .claim("permissions", authorities) //Set authority claim i.e extra info about the user
-                .signWith(getSignInKey()) // Digital signature
-                .compact();
+            return Jwts
+                    .builder()
+                    .setSubject(subject)
+                    .setIssuedAt(new Date(System.currentTimeMillis()))
+                    .setExpiration(new Date(System.currentTimeMillis() + expiration))
+                    .signWith(getSignInKey()) // Digital signature
+                    .compact();
+        }
     }
 
     private Key getSignInKey() {
 
-        // Decoders coverts that Base64 string into a byte array byte[]
+        // converts into secret key into a raw byte array that is an input to the hmac algorithm
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         // Creates a key object suitable for HMAC-SHA signing algorithms
         return Keys.hmacShaKeyFor(keyBytes);
-    }
-
-    public String generateRefreshToken(
-            UserDetails userDetails
-    ) {
-        return buildToken(new HashMap<>(), userDetails, refreshExpiration);
     }
 
     public long getRefreshExpiration() {
