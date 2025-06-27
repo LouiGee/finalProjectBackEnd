@@ -1,8 +1,8 @@
 package com.example.POMicroservice.APIValidation;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.POMicroservice.DTO.ValidateSessionRequest;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -28,43 +28,37 @@ public class JwtService {
         this.authApiService = authApiService;
     }
 
+
+
+    //Used to extractUsername from incoming jwt token
+    public String extractUsername(String authenticationToken) {
+
+        return extractClaim(authenticationToken, Claims::getSubject);
+    }
+
     //Used to extractSessionID from incoming jwt token
     public Long extractSessionID(String authenticationToken) {
 
-        System.out.println("Passed authentication token: " + authenticationToken);
-
-        DecodedJWT jwt = com.auth0.jwt.JWT.decode(authenticationToken);
-
-        System.out.println("SessionID Extracted: " +jwt.getClaim("sessionID"));
-
-        return jwt.getClaim("sessionID").asLong();
-    }
-
-    //Used to extractUsername from incoming jwt token
-    public String extractUsername(String token) {
-
-        DecodedJWT jwt = com.auth0.jwt.JWT.decode(token);
-
-        return jwt.getSubject();
+        return extractClaim(authenticationToken, claims -> claims.get("sessionID", Long.class));
     }
 
     //Used to extract claims from the token e.g userName and Roles. Allows us to pass a function to access which part of the claim we want
-    public <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+    public <T> T extractClaim(String authenticationToken, Function<Claims, T> claimsResolver) {
 
         //1.Extract all claims
-        final Claims claims = extractAllClaims(token);
+        final Claims claims = extractAllClaims(authenticationToken);
 
         //2.Extract Username
         return claimsResolver.apply(claims);
     }
 
     // Helper method to extractClaim
-    private Claims extractAllClaims(String token) {
+    private Claims extractAllClaims(String authenticationToken) {
         return Jwts
                 .parserBuilder()
                 .setSigningKey(getSignInKey()) // Verifies token using the secret key
                 .build()
-                .parseClaimsJws(token) // Parses and validates the token
+                .parseClaimsJws(authenticationToken) // Parses and validates the token
                 .getBody(); // Returns the claims (payload)
     }
 
@@ -103,8 +97,13 @@ public class JwtService {
     }
 
     // Helper method to isTokenExpired
-    private Date extractExpiration(String token) {
-        return extractClaim(token, Claims::getExpiration);
+    private Date extractExpiration(String authenticationToken) {
+        try {
+            return extractClaim(authenticationToken, Claims::getExpiration);
+        } catch (ExpiredJwtException e) {
+            // Token is expired, but we can still get the expiration date from the claims in the exception
+            return e.getClaims().getExpiration();
+        }
     }
 
 

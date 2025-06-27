@@ -1,20 +1,16 @@
 package com.example.AuthMicroservice.AuthMicroservice.Services;
 
-import com.example.AuthMicroservice.AuthMicroservice.Domain.Token;
-import com.example.AuthMicroservice.AuthMicroservice.Repositories.TokenRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
@@ -27,7 +23,7 @@ public class JwtService {
     private final long refreshExpiration = 604800000;
 
     //Short dated refreshExpiration - should really be 15 minutes
-    private final long jwtExpiration = 900000;
+    private final long jwtExpiration = 300000;
 
     public String generateToken(
             Map<String, ?> extraClaims,
@@ -77,6 +73,52 @@ public class JwtService {
         // Creates a key object suitable for HMAC-SHA signing algorithms
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+    //Used to extractUsername from incoming jwt token
+    public String extractUsername(String authenticationToken) {
+
+        return extractClaim(authenticationToken, Claims::getSubject);
+    }
+
+
+    //Used to extractSessionID from incoming jwt token
+    public String extractSessionID(String authenticationToken) {
+
+        return extractClaim(authenticationToken, claims -> claims.get("sessionID", String.class));
+    }
+
+    //Used to extractSessionID from incoming jwt token
+    public String extractPermission(String authenticationToken) {
+
+        return extractClaim(authenticationToken, claims -> claims.get("permission", String.class));
+    }
+
+    //Used to extract claims from the token e.g userName and Roles. Allows us to pass a function to access which part of the claim we want
+    public <T> T extractClaim(String authenticationToken, Function<Claims, T> claimsResolver) {
+
+        //1.Extract all claims
+        final Claims claims = extractAllClaims(authenticationToken);
+
+        //2.Extract Username
+        return claimsResolver.apply(claims);
+    }
+
+    // Helper method to extractClaim
+    private Claims extractAllClaims(String authenticationToken) {
+        try {
+            return Jwts
+                    .parserBuilder()
+                    .setSigningKey(getSignInKey()) // Verifies token using the secret key
+                    .build()
+                    .parseClaimsJws(authenticationToken) // Parses and validates the token
+                    .getBody(); // Returns the claims (payload)
+        } catch (Exception e) {}
+
+    }
+
+
+
+
 
     public long getRefreshExpiration() {
         return refreshExpiration;

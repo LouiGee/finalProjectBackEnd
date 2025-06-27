@@ -24,9 +24,9 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class FilterConfig extends OncePerRequestFilter {
 
+    // Used to inject the service classes into the class
     private final JwtService jwtService;
 
-    // Used to inject the authApiService bean into the class
     private final AuthApiService authApiService;
 
     @Override
@@ -49,11 +49,9 @@ public class FilterConfig extends OncePerRequestFilter {
             }
         }
 
-        Debug:
-        System.out.println("Token found in request: " + authenticationToken);
+        // Debug: System.out.println("Token found in request: " + authenticationToken);
 
         // Debug: System.out.println("Token valid: " + jwtService.isTokenValid(token));
-
 
         // 1. Is authenticationToken present
 
@@ -63,7 +61,7 @@ public class FilterConfig extends OncePerRequestFilter {
             authenticationTokenPresent = true;
         }
 
-        // 2. Is the authenticationToken expiry date is within its expiry date
+        // 2. Is the authenticationToken expiry date is within its expiry date - this step uses the signature to verfiy the expiration claim
 
         boolean authenticationTokenWithinExpiry = false;
 
@@ -84,9 +82,14 @@ public class FilterConfig extends OncePerRequestFilter {
 
             RefreshTokenResponse refreshResponse = refreshTokenResponse.block();
 
-            // Add refresh tokens to response cookie for subsequent calls
+
 
             assert refreshResponse != null;
+
+            // Add valid tokens to current HTTP request
+
+
+            // Add refreshed tokens to response cookie for subsequent calls
 
             response.addCookie((new Cookie("authenticationToken", refreshResponse.getAuthenticationToken())));
             response.addCookie((new Cookie("refreshToken", refreshResponse.getRefreshToken())));
@@ -96,13 +99,15 @@ public class FilterConfig extends OncePerRequestFilter {
             authenticationToken = refreshResponse.getAuthenticationToken();
             refreshToken = refreshResponse.getRefreshToken();
 
-        }
+            // if refreshed tokens are in the HTTP response, the HTTP request can now be deemed to be good
 
+            authenticationTokenWithinExpiry = true;
+
+        }
 
         // 4 .Is there a valid session associated with the token, if so create an authtoken to validate entry into API
 
-        if (authenticationTokenPresent && jwtService.isSessionIdInAuthenticationTokenValid(authenticationToken)) {
-
+        if (authenticationTokenPresent && authenticationTokenWithinExpiry && jwtService.isSessionIdInAuthenticationTokenValid(authenticationToken)) {
 
             // Extract username
             String username = jwtService.extractUsername(authenticationToken);

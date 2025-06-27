@@ -107,9 +107,9 @@ public class AuthenticationService {
 
         DecodedJWT jwt = com.auth0.jwt.JWT.decode(refreshRequest.getAuthenticationToken());
 
-        extractedClaims.put("permission", jwt.getClaim("permission").asString());
-        extractedClaims.put("sessionID", jwt.getClaim("sessionID").asString());
-        String subject = jwt.getSubject();
+        extractedClaims.put("permission", jwtService.extractPermission(refreshRequest.getAuthenticationToken()));
+        extractedClaims.put("sessionID", jwtService.extractSessionID(refreshRequest.getAuthenticationToken()));
+        String subject = jwtService.extractUsername(refreshRequest.getAuthenticationToken());
 
         //2. Generate new authentication Token
 
@@ -120,6 +120,8 @@ public class AuthenticationService {
         var refreshToken = jwtService.generateRefreshToken(subject);
 
         //4. Save new token
+
+        System.out.println("SessionID: " + sessionRepository.findMostRecentSessionByUserID(userRepository.returnUserByEmail(subject)));
 
         tokenRepository.save(Token.builder().authenticationToken(authenticationToken)
                 .refreshToken(refreshToken)
