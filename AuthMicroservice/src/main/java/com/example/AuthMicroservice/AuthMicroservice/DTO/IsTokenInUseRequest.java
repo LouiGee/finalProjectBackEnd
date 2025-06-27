@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class GetUserRequest {
+public class IsTokenInUseRequest {
 
-    private String userName;
+    private String authenticationToken;
 }

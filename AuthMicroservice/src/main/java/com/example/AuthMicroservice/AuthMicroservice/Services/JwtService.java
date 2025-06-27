@@ -23,7 +23,7 @@ public class JwtService {
     private final long refreshExpiration = 604800000;
 
     //Short dated refreshExpiration - should really be 15 minutes
-    private final long jwtExpiration = 300000;
+    private final long jwtExpiration = 60000;
 
     public String generateToken(
             Map<String, ?> extraClaims,
@@ -82,9 +82,9 @@ public class JwtService {
 
 
     //Used to extractSessionID from incoming jwt token
-    public String extractSessionID(String authenticationToken) {
+    public Long extractSessionID(String authenticationToken) {
 
-        return extractClaim(authenticationToken, claims -> claims.get("sessionID", String.class));
+        return extractClaim(authenticationToken, claims -> claims.get("sessionID", Long.class));
     }
 
     //Used to extractSessionID from incoming jwt token
@@ -108,14 +108,15 @@ public class JwtService {
         try {
             return Jwts
                     .parserBuilder()
-                    .setSigningKey(getSignInKey()) // Verifies token using the secret key
+                    .setSigningKey(getSignInKey())
                     .build()
-                    .parseClaimsJws(authenticationToken) // Parses and validates the token
-                    .getBody(); // Returns the claims (payload)
-        } catch (Exception e) {}
-
+                    .parseClaimsJws(authenticationToken)
+                    .getBody();
+        } catch (ExpiredJwtException ex) {
+            // Return the claims even though the token is expired
+            return ex.getClaims();
+        }
     }
-
 
 
 

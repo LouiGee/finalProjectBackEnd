@@ -1,5 +1,6 @@
 package com.example.POMicroservice.APIValidation;
 
+import com.example.POMicroservice.DTO.IsTokenInUseRequest;
 import com.example.POMicroservice.DTO.RefreshTokenRequest;
 import com.example.POMicroservice.DTO.RefreshTokenResponse;
 import com.example.POMicroservice.DTO.ValidateSessionRequest;
@@ -15,8 +16,19 @@ public class AuthApiService {
             .baseUrl("http://localhost:8080")
             .build();
 
+    // Call authentication service to verify that token is in use
+    public Mono<Boolean> isTokenInUse(IsTokenInUseRequest tokenInUseRequest) {
+        return  webClient.post()
+                .uri("/api/auth/isTokenInUse")
+                .header("Content-Type", "application/json")
+                .bodyValue(tokenInUseRequest)
+                .retrieve()
+                .bodyToMono(Boolean.class)
+                ;
+    }
+
     // Call authentication service to verify that user extracted from jwt token exists
-    public Mono<Boolean> validateSession(ValidateSessionRequest validateSessionRequest) {
+    public Mono<Boolean> isSessionValid(ValidateSessionRequest validateSessionRequest) {
         return  webClient.post()
                 .uri("/api/auth/validateSession")
                 .header("Content-Type", "application/json")
@@ -26,7 +38,7 @@ public class AuthApiService {
                 ;
     }
 
-    // Call authentication service to verify that user extracted from jwt token exists
+    // Call to refresh token
     public Mono<RefreshTokenResponse> refreshToken(RefreshTokenRequest refreshTokenRequest) {
         return  webClient.post()
                 .uri("/api/auth/refreshToken")

@@ -1,5 +1,6 @@
 package com.example.POMicroservice.APIValidation;
 
+import com.example.POMicroservice.DTO.IsTokenInUseRequest;
 import com.example.POMicroservice.DTO.RefreshTokenRequest;
 import com.example.POMicroservice.DTO.RefreshTokenResponse;
 import jakarta.servlet.FilterChain;
@@ -45,7 +46,6 @@ public class FilterConfig extends OncePerRequestFilter {
                 if ("refreshToken".equals(cookie.getName())) {
                     refreshToken = cookie.getValue();
                 }
-
             }
         }
 
@@ -61,7 +61,13 @@ public class FilterConfig extends OncePerRequestFilter {
             authenticationTokenPresent = true;
         }
 
-        // 2. Is the authenticationToken expiry date is within its expiry date - this step uses the signature to verfiy the expiration claim
+        // 2. Is the authenticationToken still in use
+
+        boolean authenticationTokenStillInUse = false;
+
+        authenticationTokenStillInUse = Boolean.TRUE.equals(authApiService.isTokenInUse(IsTokenInUseRequest.builder().authenticationToken(authenticationToken).build()).block());
+
+        // 3. Is the authenticationToken expiry date is within its expiry date - this step uses the signature to verify the expiration claim
 
         boolean authenticationTokenWithinExpiry = false;
 
@@ -69,11 +75,11 @@ public class FilterConfig extends OncePerRequestFilter {
             authenticationTokenWithinExpiry = true;
         }
 
-        System.out.println("tokenPresent:" + authenticationTokenPresent + " tokenValid:" + authenticationTokenWithinExpiry);
+         System.out.println("tokenPresent:" + authenticationTokenPresent + " tokenWithinExpiry:" + authenticationTokenWithinExpiry + "tokenStillinUse" + authenticationTokenStillInUse);
 
-        // 3. If authenticationToken is present but has expired then request token refresh
+        // 4. If authenticationToken is present, is still in use but has expired then request token refresh
 
-        if (authenticationTokenPresent && !authenticationTokenWithinExpiry) {
+        if (authenticationTokenPresent && authenticationTokenStillInUse && !authenticationTokenWithinExpiry) {
 
             Mono<RefreshTokenResponse> refreshTokenResponse = authApiService.refreshToken(RefreshTokenRequest.builder()
                     .authenticationToken(authenticationToken)
@@ -82,8 +88,6 @@ public class FilterConfig extends OncePerRequestFilter {
 
             RefreshTokenResponse refreshResponse = refreshTokenResponse.block();
 
-
-
             assert refreshResponse != null;
 
             // Add valid tokens to current HTTP request
@@ -91,10 +95,17 @@ public class FilterConfig extends OncePerRequestFilter {
 
             // Add refreshed tokens to response cookie for subsequent calls
 
-            response.addCookie((new Cookie("authenticationToken", refreshResponse.getAuthenticationToken())));
-            response.addCookie((new Cookie("refreshToken", refreshResponse.getRefreshToken())));
 
-            // update authentication and refresh tokens
+            Cookie authenticationCookie = new Cookie("authenticationToken", refreshResponse.getAuthenticationToken());
+            authenticationCookie.setPath("/");
+
+            Cookie refreshCookie = (new Cookie("refreshToken", refreshResponse.getRefreshToken()));
+            refreshCookie.setPath("/");
+
+            response.addCookie(authenticationCookie);
+            response.addCookie(refreshCookie);
+
+            // update local authentication and refresh tokens
 
             authenticationToken = refreshResponse.getAuthenticationToken();
             refreshToken = refreshResponse.getRefreshToken();

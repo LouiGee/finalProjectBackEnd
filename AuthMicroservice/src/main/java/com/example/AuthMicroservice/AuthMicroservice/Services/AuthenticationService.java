@@ -103,7 +103,7 @@ public class AuthenticationService {
 
         //1. Extract claims
 
-        var extractedClaims = new HashMap<String, String>();
+        var extractedClaims = new HashMap<String,Object>();
 
         DecodedJWT jwt = com.auth0.jwt.JWT.decode(refreshRequest.getAuthenticationToken());
 
@@ -129,7 +129,7 @@ public class AuthenticationService {
                 .refreshTokenExpiration(new Date(System.currentTimeMillis() + jwtService.getRefreshExpiration()))
                 .session(sessionRepository.findMostRecentSessionByUserID(userRepository.returnUserByEmail(subject)))
                 .userEmail(subject)
-                .userPermission(extractedClaims.get("permission"))
+                .userPermission((String) extractedClaims.get("permission"))
                 .tokenInUse(true)
                 .build());
 
@@ -154,6 +154,12 @@ public class AuthenticationService {
     public Boolean sessionFound (Long sessionID) {
 
         return sessionRepository.findById(sessionID).isPresent();
+
+    }
+
+    public Boolean isTokenInUse (String authenticationToken) {
+
+        return tokenRepository.findByAuthenticationToken(authenticationToken).get().getTokenInUse();
 
     }
 

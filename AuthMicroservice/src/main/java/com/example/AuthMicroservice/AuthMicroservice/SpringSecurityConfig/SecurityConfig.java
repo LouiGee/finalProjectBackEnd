@@ -8,6 +8,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -34,4 +40,35 @@ public class SecurityConfig {
                 );
 
         return http.build();
-    }}
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+
+        // Allow only your frontend origin here
+        configuration.setAllowedOrigins(List.of("http://localhost:3000")); // This will need to be changed in production
+
+        // Allow credentials (cookies)
+        configuration.setAllowCredentials(true);
+
+        // Allowed HTTP methods from client
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // Allowed headers sent by the client
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
+
+        // Optional: expose headers to client
+        // configuration.setExposedHeaders(Arrays.asList("Authorization"));
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        // Apply to all endpoints
+        source.registerCorsConfiguration("/**", configuration);
+
+        return source;
+    }
+
+
+
+}

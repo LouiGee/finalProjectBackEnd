@@ -1,5 +1,6 @@
 package com.example.AuthMicroservice;
 
+import com.example.AuthMicroservice.AuthMicroservice.DTO.IsTokenInUseRequest;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.RefreshTokenRequest;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.ValidateSessionRequest;
 import com.example.AuthMicroservice.AuthMicroservice.Services.AuthenticationService;
@@ -35,8 +36,14 @@ public class AuthenticationController {
 
 
     @PostMapping("/validateSession")
-    public ResponseEntity<?> getUserName(@RequestBody ValidateSessionRequest sessionRequest){
+    public ResponseEntity<?> validateSession(@RequestBody ValidateSessionRequest sessionRequest){
         return ResponseEntity.ok(authenticationService.sessionFound(sessionRequest.getSessionId()));
+
+    }
+
+    @PostMapping("/isTokenInUse")
+    public ResponseEntity<?> isTokenInUse(@RequestBody IsTokenInUseRequest request){
+        return ResponseEntity.ok(authenticationService.isTokenInUse(request.getAuthenticationToken()));
 
     }
 

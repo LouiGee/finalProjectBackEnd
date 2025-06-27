@@ -81,7 +81,7 @@ public class JwtService {
         ValidateSessionRequest validateSessionRequest = new ValidateSessionRequest();
         validateSessionRequest.setSessionId(sessionID);
 
-        Mono<Boolean> sessionFoundMono = authApiService.validateSession(validateSessionRequest);
+        Mono<Boolean> sessionFoundMono = authApiService.isSessionValid(validateSessionRequest);
         Boolean sessionFound = sessionFoundMono.block();
 
         // Debug: System.out.println("Username found: " + usernameFound);
