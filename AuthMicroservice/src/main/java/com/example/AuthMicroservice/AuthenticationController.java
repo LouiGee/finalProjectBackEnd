@@ -5,6 +5,8 @@ import com.example.AuthMicroservice.AuthMicroservice.DTO.RefreshTokenRequest;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.ValidateSessionRequest;
 import com.example.AuthMicroservice.AuthMicroservice.Services.AuthenticationService;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.AuthenticationRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,33 @@ public class AuthenticationController {
     public ResponseEntity<?> login(@RequestBody AuthenticationRequest request) {
 
         return ResponseEntity.ok(authenticationService.authenticate(request));
+
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@CookieValue(name = "authenticationToken", required = false) String sessionCookie, HttpServletResponse response) {
+
+        System.out.println(sessionCookie);
+
+        String logoutMessage = authenticationService.logout(sessionCookie);
+
+        // Clear the "authenticationToken" cookie
+        Cookie authenticationTokenCookie = new Cookie("authenticationToken", null);
+        authenticationTokenCookie.setHttpOnly(true);
+        // cookie.setSecure(true); // set to true in production
+        authenticationTokenCookie.setPath("/");
+        authenticationTokenCookie.setMaxAge(0); // delete immediately
+        response.addCookie(authenticationTokenCookie);
+
+        // Clear the "authenticationToken" cookie
+        Cookie refreshTokenCookie = new Cookie("refreshToken", null);
+        refreshTokenCookie.setHttpOnly(true);
+        // cookie.setSecure(true); // set to true in production
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(0); // delete immediately
+        response.addCookie(refreshTokenCookie);
+
+        return ResponseEntity.ok(logoutMessage);
 
     }
 

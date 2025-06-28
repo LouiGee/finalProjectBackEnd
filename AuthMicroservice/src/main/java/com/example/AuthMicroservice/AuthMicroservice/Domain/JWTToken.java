@@ -17,11 +17,11 @@ import java.util.Date;
 @Table(name = "jwtTokens")
 @EntityListeners(AuditingEntityListener.class)
 
-public class Token {
+public class JWTToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long tokenid;
+    private long jwttokenid;
     @Column(name = "authentication_token", length = 1000)
     private String authenticationToken;
     private String refreshToken;

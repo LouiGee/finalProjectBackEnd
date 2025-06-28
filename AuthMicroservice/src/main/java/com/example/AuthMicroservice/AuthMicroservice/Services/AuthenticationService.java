@@ -1,15 +1,13 @@
 package com.example.AuthMicroservice.AuthMicroservice.Services;
 
-import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.AuthenticationRequest;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.AuthenticationResponse;
 import com.example.AuthMicroservice.AuthMicroservice.DTO.RefreshTokenRequest;
-import com.example.AuthMicroservice.AuthMicroservice.Domain.Permission;
 import com.example.AuthMicroservice.AuthMicroservice.Domain.Session;
-import com.example.AuthMicroservice.AuthMicroservice.Domain.Token;
+import com.example.AuthMicroservice.AuthMicroservice.Domain.JWTToken;
 import com.example.AuthMicroservice.AuthMicroservice.Domain.User;
-import com.example.AuthMicroservice.AuthMicroservice.Repositories.TokenRepository;
+import com.example.AuthMicroservice.AuthMicroservice.Repositories.JWTTokenRepository;
 import com.example.AuthMicroservice.AuthMicroservice.Repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
 import com.example.AuthMicroservice.AuthMicroservice.Repositories.SessionRepository;
@@ -18,11 +16,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Optional;
-
-import static org.springframework.security.config.Elements.JWT;
 
 
 @Service
@@ -34,7 +31,7 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final SessionRepository sessionRepository;
-    private final TokenRepository tokenRepository;
+    private final JWTTokenRepository jwtTokenRepository;
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
 
@@ -64,26 +61,22 @@ public class AuthenticationService {
         //6. Generate sessionID and insert sessionID into claims
         sessionRepository.save(Session.builder().user(userRepository.returnUserByEmail(user.getUsername())).build());
 
-        Long sessionID = sessionRepository.findMostRecentSessionIDByUserID(userRepository.returnUserByEmail(user.getUsername()));
+        Long sessionID = sessionRepository.findTopByUserOrderByDateTimeStartedDesc(userRepository.returnUserByEmail(user.getUsername())).getSessionid();
 
         claims.put("sessionID", sessionID);
 
         //7. Generate short dated Token
-        var jwtToken = jwtService.generateToken(claims, user.getEmail());
-
-        DecodedJWT jwt = com.auth0.jwt.JWT.decode(jwtToken);
-
-        System.out.println("SessionID: " + jwt.getClaim("sessionID"));
+        var authenticationToken = jwtService.generateToken(claims, user.getEmail());
 
         //8. Generate long dated Token
         var refreshToken = jwtService.generateRefreshToken(user.getEmail());
 
         //9. Save token to the database
-        tokenRepository.save(Token.builder().authenticationToken(jwtToken)
+        jwtTokenRepository.save(JWTToken.builder().authenticationToken(authenticationToken)
                                             .refreshToken(refreshToken)
                                             .authenticationTokenExpiration(new Date(System.currentTimeMillis() + jwtService.getJwtExpiration()))
                                             .refreshTokenExpiration(new Date(System.currentTimeMillis() + jwtService.getRefreshExpiration()))
-                                            .session(sessionRepository.findMostRecentSessionByUserID(userRepository.returnUserByEmail(user.getUsername())))
+                                            .session(sessionRepository.findTopByUserOrderByDateTimeStartedDesc(userRepository.returnUserByEmail(user.getUsername())))
                                             .userEmail(user.getUsername())
                                             .userPermission(user.getAuthorities().iterator().next().getAuthority())
                                             .tokenInUse(true)
@@ -91,9 +84,42 @@ public class AuthenticationService {
 
         //10. Build Token
         return AuthenticationResponse.builder()
-                .authenticationToken(jwtToken)
+                .authenticationToken(authenticationToken)
                 .refreshToken(refreshToken)
                 .build();
+
+    }
+
+    public String logout(String authenticationTokenString) {
+
+        //1. Add an end date to the session
+        Long sessionID = jwtService.extractSessionID(authenticationTokenString);
+
+        //2. Find the session with that session ID
+        Session session = sessionRepository.findSessionBySessionID(sessionID);
+
+        //3. Set the finish time to mark the session as logged out
+        session.setDateTimeFinish(LocalDateTime.now());
+
+        //4. Save the updated session
+        sessionRepository.save(session);
+
+        //6. Invalidate jwt token
+        Optional<JWTToken> jwtToken = jwtTokenRepository.findByAuthenticationToken(authenticationTokenString);
+
+        if (jwtToken.isPresent()) {
+            JWTToken token = jwtToken.get();
+            token.setTokenInUse(false); // update field
+            jwtTokenRepository.save(token); // save updated entity
+        } else {
+            throw new RuntimeException("JWTToken not found associated with " + authenticationTokenString );
+        }
+
+        //7. Wipe cookies from browser
+
+
+        return "Logged out successfully";
+
 
     }
 
@@ -105,7 +131,6 @@ public class AuthenticationService {
 
         var extractedClaims = new HashMap<String,Object>();
 
-        DecodedJWT jwt = com.auth0.jwt.JWT.decode(refreshRequest.getAuthenticationToken());
 
         extractedClaims.put("permission", jwtService.extractPermission(refreshRequest.getAuthenticationToken()));
         extractedClaims.put("sessionID", jwtService.extractSessionID(refreshRequest.getAuthenticationToken()));
@@ -121,13 +146,11 @@ public class AuthenticationService {
 
         //4. Save new token
 
-        System.out.println("SessionID: " + sessionRepository.findMostRecentSessionByUserID(userRepository.returnUserByEmail(subject)));
-
-        tokenRepository.save(Token.builder().authenticationToken(authenticationToken)
+        jwtTokenRepository.save(JWTToken.builder().authenticationToken(authenticationToken)
                 .refreshToken(refreshToken)
                 .authenticationTokenExpiration(new Date(System.currentTimeMillis() + jwtService.getJwtExpiration()))
                 .refreshTokenExpiration(new Date(System.currentTimeMillis() + jwtService.getRefreshExpiration()))
-                .session(sessionRepository.findMostRecentSessionByUserID(userRepository.returnUserByEmail(subject)))
+                .session(sessionRepository.findTopByUserOrderByDateTimeStartedDesc(userRepository.returnUserByEmail(subject)))
                 .userEmail(subject)
                 .userPermission((String) extractedClaims.get("permission"))
                 .tokenInUse(true)
@@ -135,12 +158,12 @@ public class AuthenticationService {
 
         //5. Update previous token to not inuse
 
-        Optional<Token> previousToken = tokenRepository.findByAuthenticationToken(refreshRequest.getAuthenticationToken());
+        Optional<JWTToken> previousToken = jwtTokenRepository.findByAuthenticationToken(refreshRequest.getAuthenticationToken());
 
         if (previousToken.isPresent()) {
-            Token token = previousToken.get();
+            JWTToken token = previousToken.get();
             token.setTokenInUse(false); // update field
-            tokenRepository.save(token); // save updated entity
+            jwtTokenRepository.save(token); // save updated entity
         } else {
             throw new RuntimeException("Token not found with authenticationToken: " + refreshRequest.getAuthenticationToken());
         }
@@ -159,7 +182,7 @@ public class AuthenticationService {
 
     public Boolean isTokenInUse (String authenticationToken) {
 
-        return tokenRepository.findByAuthenticationToken(authenticationToken).get().getTokenInUse();
+        return jwtTokenRepository.findByAuthenticationToken(authenticationToken).get().getTokenInUse();
 
     }
 

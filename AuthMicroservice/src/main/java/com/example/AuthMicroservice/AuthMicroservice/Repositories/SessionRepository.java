@@ -15,11 +15,13 @@ public interface SessionRepository extends JpaRepository<Session,Long> {
 
     Optional<Session> findById(Long id);
 
-    @Query("SELECT s.sessionid FROM Session s WHERE s.user = :userId ORDER BY s.dateTimeStarted DESC")
-    Long findMostRecentSessionIDByUserID(@Param("userId") User userId);
+    Session findTopByUserOrderByDateTimeStartedDesc(User user);
 
     @Query("SELECT s FROM Session s WHERE s.user = :userId ORDER BY s.dateTimeStarted DESC")
     Session findMostRecentSessionByUserID(User userId);
+
+    @Query("SELECT s FROM Session s WHERE s.sessionid = :sessionId")
+    Session findSessionBySessionID(Long sessionId);
 
 
 }
