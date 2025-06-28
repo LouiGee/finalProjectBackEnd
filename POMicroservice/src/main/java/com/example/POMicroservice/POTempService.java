@@ -1,5 +1,6 @@
 package com.example.POMicroservice;
 
+import com.example.POMicroservice.DTO.EditPOTempRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -140,7 +141,8 @@ public class POTempService {
     }
 
 
-    public void deleteTempPO(String POItemNumber) {
+    public void deletePOTemp(String POItemNumber) {
+
 
         // Extract numeric part (last 2 digits) of the PO item number
         int deletedItemIndex = Integer.parseInt(POItemNumber.substring(POItemNumber.length() - 2));
@@ -152,7 +154,7 @@ public class POTempService {
         List<POTemp> poTempsList = POTempRepository.findAll();
 
         // Delete Temp Table
-        POTempRepository.deleteAll();
+        // POTempRepository.deleteAll();
 
         // Filter entries that had a higher index than the deleted one
         List<POTemp> poFilteredTempList = poTempsList.stream()
@@ -163,8 +165,13 @@ public class POTempService {
                 })
                 .toList();
 
-        // Re-index the filtered entries
+
+        // Re-index the filtered entries and add back
         for (POTemp tempPO : poFilteredTempList) {
+
+            //First delete
+            POTempRepository.delete(tempPO);
+
             String itemNumber = tempPO.getPoitemnumber();
             String prefix = itemNumber.substring(0, itemNumber.length() - 2);
 
@@ -180,6 +187,48 @@ public class POTempService {
     }
 
 
-    public PO updatePO(PO po) {return PORepository.save(po);}
+    public void updatePOTemp(EditPOTempRequest request, String poItemNumber) {
+
+        //1. Update POTemp
+
+        Optional<POTemp> tempPOToEditOptional = POTempRepository.findByPoitemnumber(poItemNumber);
+
+        System.out.println(tempPOToEditOptional.isPresent());
+
+        System.out.println(request.getField());
+
+
+
+        POTemp tempPOToUpdate = tempPOToEditOptional.orElseThrow(() -> new RuntimeException("PO not found"));
+
+
+        if (request.getField().equals("company")) {
+
+            tempPOToUpdate.setCompany((String) request.getNewValue());
+
+        }
+        else if (request.getField().equals("item")) {
+
+            tempPOToUpdate.setItem((String) request.getNewValue());
+
+        }
+
+        else if (request.getField().equals("quantity")) {
+
+            tempPOToUpdate.setQuantity((Integer) request.getNewValue());
+
+        }
+
+        else if (request.getField().equals("price")) {
+
+            tempPOToUpdate.setPrice((Double) request.getNewValue());
+
+        }
+
+        // Save edited TempPO
+        POTempRepository.save(tempPOToUpdate);
+
+
+    }
 }
 

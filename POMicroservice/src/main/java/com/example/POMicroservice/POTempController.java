@@ -1,5 +1,6 @@
 package com.example.POMicroservice;
 
+import com.example.POMicroservice.DTO.EditPOTempRequest;
 import com.example.POMicroservice.DTO.POItemNumber;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ public class POTempController {
 
     @Autowired
     private POTempService poTempService;
+
+    private POTempRepository poTempRepository;
 
 
     @GetMapping("/all")
@@ -39,10 +42,11 @@ public class POTempController {
 
         for (POItemNumber poItemNumber : poItemNumberList) {
 
-            String poItemNumberString = poItemNumber.getPoitemnumber();
-            poTempService.deleteTempPO(poItemNumberString);
+                String poItemNumberString = poItemNumber.getPoitemnumber();
+                poTempService.deletePOTemp(poItemNumberString);
 
         }
+
 
         return HttpStatus.OK;
 
@@ -52,6 +56,16 @@ public class POTempController {
     public ResponseEntity<POTemp> createPOTemp(@RequestBody POTemp poTemp) {
         POTemp newPOTemp = poTempService.createPOTemp(poTemp);
         return new ResponseEntity<>(newPOTemp, HttpStatus.CREATED);
+    }
+
+    @PutMapping("/edit/{poItemNumber}")
+    public HttpStatus updatePOTemp(@RequestBody EditPOTempRequest request
+                                             , @PathVariable("poItemNumber") String poItemNumber) {
+        ;
+
+        poTempService.updatePOTemp(request, poItemNumber);
+
+        return HttpStatus.OK;
     }
 
 
