@@ -27,12 +27,13 @@ public class PO {
     private String Unit;
     private int Quantity;
     private double Price;
+    private String Status;
 
     @CreatedDate
     @Column(nullable = true, updatable = false)
     private LocalDateTime dateRaised;
 
-    public PO(String UserId, String PONumber, String POItemNumber, String Company, String Item, String Unit, int Quantity , double Price, LocalDateTime dateRaised ) {
+    public PO(String UserId, String PONumber, String POItemNumber, String Company, String Item, String Unit, int Quantity , double Price, LocalDateTime dateRaised, String status ) {
 
         this.UserId = UserId;
         this.ponumber = PONumber;
@@ -43,6 +44,7 @@ public class PO {
         this.Quantity = Quantity;
         this.Price = Price;
         this.dateRaised = dateRaised;
+        this.Status = Status;
 
     }
 
