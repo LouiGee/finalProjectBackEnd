@@ -33,17 +33,15 @@ public class PO {
     @Column(nullable = true, updatable = false)
     private LocalDateTime dateRaised;
 
-    public PO(String UserId, String PONumber, String POItemNumber, String Company, String Item, String Unit, int Quantity , double Price, LocalDateTime dateRaised, String status ) {
+    public PO(String UserId, String Company, String Item, String Unit, int Quantity , double Price, String Status ) {
 
         this.UserId = UserId;
-        this.ponumber = PONumber;
-        this.poitemnumber = POItemNumber;
         this.Company = Company;
         this.Item = Item;
         this.Unit = Unit;
         this.Quantity = Quantity;
         this.Price = Price;
-        this.dateRaised = dateRaised;
+        this.dateRaised = LocalDateTime.now();
         this.Status = Status;
 
     }

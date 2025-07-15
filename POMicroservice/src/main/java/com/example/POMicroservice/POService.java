@@ -21,9 +21,10 @@ public class POService {
         return poRepository.findAll();
     }
 
-    public PO createPOTemp(PO po) {
 
-        String PONumber = generatePONumber();
+    public PO createPO(PO po) {
+
+        String PONumber = generatePONumber(po);
 
         String POItemNumber = generatePOItemNumber();
 
@@ -33,35 +34,38 @@ public class POService {
 
         po.setDateRaised(LocalDateTime.now());
 
-        return PORepository.save(po);
+        return poRepository.save(po);
 
     }
 
 
-    private String generatePONumber() {
+    private String generatePONumber(PO po) {
 
         //Check the PO Table
-        Optional<PO> mostRecentPO = PORepository.findTopByOrderByPonumberDesc();
-        String lastPONumber = mostRecentPO.map(PO::getPonumber).orElse("Empty");
-
-        //Check the Temp PO Table
-        Optional<POTemp> mostRecentTempPO = POTempRepository.findTopByOrderByPonumberDesc();
-        String lastTempPONumber = mostRecentTempPO.map(POTemp::getPonumber).orElse("Empty");
+        Optional<PO> mostRecentPOByUser = poRepository.findTopByUserIDOrderByPonumberDesc(po.getUserId());
+        String lastPONumber = mostRecentPOByUser.map(PO::getPonumber).orElse("Empty");
 
         // No entries in PO table
         if (lastPONumber.equals("Empty")) {
             return "PO01";
         }
 
-        // entry in PO table but none in Temp
-        else if (!lastPONumber.equals("Empty") && POTempRepository.POTempCount() == 0) {
+        // If last entry by a user in the PO table is "not submitted" then return last entries PO number
+        if (!lastPONumber.equals("Empty") && po.getUserId() == mostRecentPO.get().getUserId()) {
+
+
+            return;
+        }
+
+
+        else if (poRepository.POCount() == 0) {
 
             int number = Integer.parseInt(lastPONumber.substring(2));
             return String.format("PO%02d", number + 1);
         }
 
         // already entries in Temp table
-        else if (POTempRepository.POTempCount() > 0) {
+        else if (poRepository.POCount() > 0) {
             return lastTempPONumber;  }
 
 
@@ -72,12 +76,12 @@ public class POService {
     private String generatePOItemNumber() {
 
         // Search PO table
-        Optional<PO> mostRecentPO = PORepository.findTopByOrderByPonumberDesc();
+        Optional<PO> mostRecentPO = poRepository.findTopByOrderByPonumberDesc();
         String lastPONumber = mostRecentPO.map(PO::getPonumber).orElse("Empty");
 
         // Search PO Temp table
-        Optional<POTemp> mostTempRecentPO = POTempRepository.findTopByOrderByPoitemnumberDesc();
-        String lastPOItemNumber = mostTempRecentPO.map(POTemp::getPoitemnumber).orElse("Empty");
+        Optional<PO> mostTempRecentPO = poRepository.findTopByOrderByPoitemnumberDesc();
+        String lastPOItemNumber = mostTempRecentPO.map(PO::getPoitemnumber).orElse("Empty");
 
         //First Entry
         if (lastPONumber.equals("Empty") && lastPOItemNumber.equals("Empty")) {
@@ -85,7 +89,7 @@ public class POService {
         }
 
         // Already entries in the temp table
-        else if (POTempRepository.POTempCount() > 0) {
+        else if (poRepository.POCount() > 0) {
 
             //will not be empty
             int lastNumber = Integer.parseInt(lastPOItemNumber.substring(lastPOItemNumber.length() - 2));
@@ -96,7 +100,7 @@ public class POService {
         }
 
         // Entries in the PO table but none in the temp table
-        else if (!lastPONumber.equals("Empty") && POTempRepository.POTempCount() == 0) {
+        else if (!lastPONumber.equals("Empty") && poRepository.POCount() == 0) {
 
             int number = Integer.parseInt(lastPONumber.substring(2));
             return String.format("PO%02d", number + 1) + "-01" ;
@@ -110,14 +114,13 @@ public class POService {
 
         //1. Update POTemp
 
-        Optional<POTemp> tempPOToEditOptional = POTempRepository.findByPoitemnumber(poItemNumber);
+        Optional<PO> tempPOToEditOptional = poRepository.findByPoitemnumber(poItemNumber);
 
-        System.out.println(tempPOToEditOptional.isPresent());
+        // DEBUG System.out.println(tempPOToEditOptional.isPresent());
 
-        System.out.println(request.getField());
+        // DEBUG System.out.println(request.getField());
 
-        POTemp tempPOToUpdate = tempPOToEditOptional.orElseThrow(() -> new RuntimeException("PO not found"));
-
+        PO tempPOToUpdate = tempPOToEditOptional.orElseThrow(() -> new RuntimeException("PO not found"));
 
         if (request.getField().equals("company")) {
 
@@ -143,7 +146,7 @@ public class POService {
         }
 
         // Save edited TempPO
-        POTempRepository.save(tempPOToUpdate);
+        poRepository.save(tempPOToUpdate);
 
 
     }
