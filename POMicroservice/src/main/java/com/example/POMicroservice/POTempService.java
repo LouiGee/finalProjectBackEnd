@@ -124,7 +124,7 @@ public class POTempService {
                     po.setPonumber(tempPO.getPonumber());
                     po.setQuantity(tempPO.getQuantity());
                     po.setPrice(tempPO.getPrice());
-                    po.setUserId(tempPO.getUserId());
+                    po.setRaisedBy(tempPO.getRaisedBy());
                     po.setCompany(tempPO.getCompany());
                     po.setUnit(tempPO.getUnit());
                     po.setDateRaised(LocalDateTime.now());

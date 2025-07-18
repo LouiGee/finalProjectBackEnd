@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 @Table(name = "purchaseOrder")
 public class PO {
 
-    private String UserId;
+    private String raisedBy;
     private String ponumber;
 
     @Id
@@ -33,9 +33,9 @@ public class PO {
     @Column(nullable = true, updatable = false)
     private LocalDateTime dateRaised;
 
-    public PO(String UserId, String PONumber, String POItemNumber, String Company, String Item, String Unit, int Quantity , double Price, LocalDateTime dateRaised, String Status ) {
+    public PO(String RaisedBy, String PONumber, String POItemNumber, String Company, String Item, String Unit, int Quantity , double Price, LocalDateTime dateRaised, String Status ) {
 
-        this.UserId = UserId;
+        this.raisedBy = RaisedBy;
         this.ponumber = PONumber;
         this.poitemnumber = POItemNumber;
         this.Company = Company;
@@ -48,13 +48,6 @@ public class PO {
 
     }
 
-    public void setUserId(String userId) {
-        UserId = userId;
-    }
-
-    public String getUserId() {
-        return UserId;
-    }
 
     public String getPonumber() {
         return ponumber;

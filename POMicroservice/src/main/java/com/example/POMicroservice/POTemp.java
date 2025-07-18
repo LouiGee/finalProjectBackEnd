@@ -19,7 +19,7 @@ public class POTemp {
     @Id
     private String poitemnumber;
 
-    private String UserId;
+    private String raisedBy;
 
     private String Company;
     private String Item;
@@ -31,9 +31,9 @@ public class POTemp {
     @Column(nullable = true, updatable = false)
     private LocalDateTime dateRaised;
 
-    public POTemp(String UserId, String Company, String Item, String Unit, int Quantity, double Price) {
+    public POTemp(String RaisedBy , String Company, String Item, String Unit, int Quantity, double Price) {
 
-        this.UserId = UserId;
+        this.raisedBy = RaisedBy;
         this.Company = Company;
         this.Item = Item;
         this.Unit = Unit;
@@ -49,10 +49,6 @@ public class POTemp {
         return ponumber;
     }
 
-    public void setUserId(String userId) {
-        UserId = userId;
-    }
-
     public void setPoitemnumber(String poitemnumber) {
         this.poitemnumber = poitemnumber;
     }
@@ -63,10 +59,6 @@ public class POTemp {
 
     public String getPoitemnumber() {
         return poitemnumber;
-    }
-
-    public String getUserId() {
-        return UserId;
     }
 
     public String getCompany() {
