@@ -1,9 +1,12 @@
 
 package com.example.POMicroservice;
 
+import com.example.POMicroservice.DTO.POItemNumber;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -16,20 +19,21 @@ public class POService {
         this.poRepository = poRepository;
     }
 
-    public List<PO> getAllPO() {
-        return poRepository.findAll();
+
+
+    public List<PO> getAllNonApprovedPO() {
+        return poRepository.findByStatus("awaiting-approval");
     }
 
-    public PO getPOById(String PONumber) {
-        return poRepository.findById(PONumber).orElse(null);
+    public List<PO> getAllApprovedPO() {
+        return poRepository.findByStatus("approved");
     }
 
-    public PO createPO(PO po) {
+    @Transactional
+    public void approvePOs(List<POItemNumber> POItemNumbers, String email) {
 
-        return poRepository.save(po);
+        //Update Status, Approved By, Date Approved
+        poRepository.approvePOsByItemNumbers(POItemNumbers, email, LocalDateTime.now());
 
-    }
-
-    public PO updatePO(PO po) {return poRepository.save(po);}
-}
+}}
 
