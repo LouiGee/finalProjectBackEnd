@@ -21,8 +21,8 @@ public interface PORepository extends JpaRepository<PO, String> {
     List<PO> findByStatus(String status);
 
     @Modifying
-    @Query("UPDATE PO p SET p.status = 'approved', p.approvedBy = :approvedBy WHERE p.poitemnumber IN :poItemNumbers")
-    void approvePOsByItemNumbers(@Param("poItemNumbers") List<POItemNumber> poItemNumbers,
+    @Query("UPDATE PO p SET p.status = 'Approved', p.approvedBy = :approvedBy, p.dateApproved = :approvalDate WHERE p.poitemnumber = :poItemNumber")
+    void approvePOsByItemNumbers(@Param("poItemNumber") String poItemNumber,
                                  @Param("approvedBy") String approvedBy,
                                  @Param("approvalDate") LocalDateTime approvalDate);
 

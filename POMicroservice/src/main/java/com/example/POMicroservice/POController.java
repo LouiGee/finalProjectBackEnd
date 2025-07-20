@@ -32,6 +32,8 @@ public class POController {
     @PostMapping("/approve")
     public ResponseEntity<List<POItemNumber>> approve(@RequestBody List<POItemNumber> poItemNumberList, @CookieValue(name = "email", required = false) String email) {
 
+        for (POItemNumber poItemNumber : poItemNumberList) {System.out.println(poItemNumber.getPoitemnumber());}
+
         poService.approvePOs(poItemNumberList, email);
         return new ResponseEntity<>(poItemNumberList, HttpStatus.OK);
     }

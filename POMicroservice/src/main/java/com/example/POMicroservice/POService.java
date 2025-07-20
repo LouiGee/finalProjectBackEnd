@@ -32,8 +32,11 @@ public class POService {
     @Transactional
     public void approvePOs(List<POItemNumber> POItemNumbers, String email) {
 
-        //Update Status, Approved By, Date Approved
-        poRepository.approvePOsByItemNumbers(POItemNumbers, email, LocalDateTime.now());
+        System.out.println(email);
 
-}}
+        for (POItemNumber poItemNumber : POItemNumbers) {
+            //Update Status, Approved By, Date Approved
+            poRepository.approvePOsByItemNumbers(poItemNumber.getPoitemnumber(), email, LocalDateTime.now());
+
+}}}
 
