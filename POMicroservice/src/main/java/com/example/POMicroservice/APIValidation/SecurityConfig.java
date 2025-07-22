@@ -35,7 +35,11 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Enables CORS (cross-origin requests) with default settings
                 .csrf(AbstractHttpConfigurer::disable) // Disables CSRF protection (common for APIs)
                 .authorizeHttpRequests(req -> // Begin setting up route security rules
-                        req
+                        req.requestMatchers(
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/swagger-ui.html"
+                                ).permitAll()
                                 .requestMatchers("/api/po/**") // Apply the rule to any URL starting with /auth/po/
                                 .authenticated() // Require authentication for those URLs
                                 .requestMatchers("/api/temppo/**")

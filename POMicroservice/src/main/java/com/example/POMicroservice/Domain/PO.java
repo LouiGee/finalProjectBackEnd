@@ -1,6 +1,6 @@
 
 
-package com.example.POMicroservice;
+package com.example.POMicroservice.Domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -52,6 +52,7 @@ public class PO {
         this.status = Status;
 
     }
+
 
 
     public String getPonumber() {

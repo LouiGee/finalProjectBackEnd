@@ -1,7 +1,9 @@
 
-package com.example.POMicroservice;
+package com.example.POMicroservice.Services;
 
 import com.example.POMicroservice.DTO.POItemNumber;
+import com.example.POMicroservice.Domain.PO;
+import com.example.POMicroservice.Repositories.PORepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +21,9 @@ public class POService {
         this.poRepository = poRepository;
     }
 
-
+    public List<PO> getAllPO() {
+        return poRepository.findAll();
+    }
 
     public List<PO> getAllNonApprovedPO() {
         return poRepository.findByStatus("awaiting-approval");

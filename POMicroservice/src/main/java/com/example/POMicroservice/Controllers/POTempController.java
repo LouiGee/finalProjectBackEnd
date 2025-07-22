@@ -1,7 +1,10 @@
-package com.example.POMicroservice;
+package com.example.POMicroservice.Controllers;
 
 import com.example.POMicroservice.DTO.EditPOTempRequest;
 import com.example.POMicroservice.DTO.POItemNumber;
+import com.example.POMicroservice.Domain.POTemp;
+import com.example.POMicroservice.Repositories.POTempRepository;
+import com.example.POMicroservice.Services.POTempService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

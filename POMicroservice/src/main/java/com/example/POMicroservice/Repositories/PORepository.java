@@ -1,6 +1,6 @@
-package com.example.POMicroservice;
+package com.example.POMicroservice.Repositories;
 
-import com.example.POMicroservice.DTO.POItemNumber;
+import com.example.POMicroservice.Domain.PO;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.data.jpa.repository.Modifying;

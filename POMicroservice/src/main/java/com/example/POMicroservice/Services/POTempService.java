@@ -1,6 +1,10 @@
-package com.example.POMicroservice;
+package com.example.POMicroservice.Services;
 
 import com.example.POMicroservice.DTO.EditPOTempRequest;
+import com.example.POMicroservice.Domain.PO;
+import com.example.POMicroservice.Domain.POTemp;
+import com.example.POMicroservice.Repositories.PORepository;
+import com.example.POMicroservice.Repositories.POTempRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
@@ -12,13 +16,13 @@ import java.util.stream.Collectors;
 public class POTempService {
 
     @Autowired
-    private final com.example.POMicroservice.POTempRepository POTempRepository;
+    private final POTempRepository POTempRepository;
 
     @Autowired
-    private final com.example.POMicroservice.PORepository PORepository;
+    private final PORepository PORepository;
 
 
-    public POTempService(com.example.POMicroservice.PORepository PORepository, com.example.POMicroservice.POTempRepository POTempRepository ) {
+    public POTempService(PORepository PORepository, POTempRepository POTempRepository ) {
         this.PORepository = PORepository;
         this.POTempRepository = POTempRepository; ;
     }
@@ -144,7 +148,6 @@ public class POTempService {
 
     public void deletePOTemp(String POItemNumber) {
 
-
         // Extract numeric part (last 2 digits) of the PO item number
         int deletedItemIndex = Integer.parseInt(POItemNumber.substring(POItemNumber.length() - 2));
 
@@ -194,10 +197,9 @@ public class POTempService {
 
         Optional<POTemp> tempPOToEditOptional = POTempRepository.findByPoitemnumber(poItemNumber);
 
-        System.out.println(tempPOToEditOptional.isPresent());
+        //. Debug System.out.println(tempPOToEditOptional.isPresent());
 
-        System.out.println(request.getField());
-
+        //. Debug System.out.println(request.getField());
 
 
         POTemp tempPOToUpdate = tempPOToEditOptional.orElseThrow(() -> new RuntimeException("PO not found"));

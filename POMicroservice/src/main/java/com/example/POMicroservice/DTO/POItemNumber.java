@@ -4,7 +4,8 @@ public class POItemNumber {
 
     private String poitemnumber;
 
-    public POItemNumber() {}
+    public POItemNumber(String poItemNumber) {this.poitemnumber = poItemNumber;}
+
 
     public String getPoitemnumber() {
         return poitemnumber;

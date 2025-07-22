@@ -1,4 +1,4 @@
-package com.example.POMicroservice;
+package com.example.POMicroservice.Domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;

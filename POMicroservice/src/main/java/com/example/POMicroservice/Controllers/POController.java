@@ -1,6 +1,8 @@
-package com.example.POMicroservice;
+package com.example.POMicroservice.Controllers;
 
 import com.example.POMicroservice.DTO.POItemNumber;
+import com.example.POMicroservice.Domain.PO;
+import com.example.POMicroservice.Services.POService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,12 @@ public class POController {
 
     @Autowired
     private POService poService;
+
+    @GetMapping("/all")
+    public ResponseEntity<List<PO>> getAll() {
+        List<PO> po = poService.getAllPO();
+        return new ResponseEntity<>(po, HttpStatus.OK);
+    }
 
     @GetMapping("/allNonApprovedPo")
     public ResponseEntity<List<PO>> getAllNonApprovedPo() {
