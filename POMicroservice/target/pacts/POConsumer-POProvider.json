@@ -1,0 +1,753 @@
+{
+  "consumer": {
+    "name": "POConsumer"
+  },
+  "interactions": [
+    {
+      "description": "A request for all Approved POs",
+      "key": "ffabd569",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "Approved POs exist"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/po/allApprovedPo"
+      },
+      "response": {
+        "body": {
+          "content": [
+            {
+              "company": "string",
+              "dateRaised": "1973-86-42T23:19:31",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "Approved",
+              "unit": "string"
+            },
+            {
+              "company": "string",
+              "dateRaised": "1973-86-42T23:19:31",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "Approved",
+              "unit": "string"
+            },
+            {
+              "company": "string",
+              "dateRaised": "1973-86-42T23:19:31",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "Approved",
+              "unit": "string"
+            }
+          ],
+          "contentType": "application/json; charset=UTF-8",
+          "encoded": false
+        },
+        "generators": {
+          "body": {
+            "$[*].company": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].dateRaised": {
+              "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?",
+              "type": "Regex"
+            },
+            "$[*].item": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].poitemnumber": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].ponumber": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].price": {
+              "max": 2147483647,
+              "min": 0,
+              "type": "RandomInt"
+            },
+            "$[*].quantity": {
+              "max": 2147483647,
+              "min": 0,
+              "type": "RandomInt"
+            },
+            "$[*].raisedBy": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].unit": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json; charset=UTF-8"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 3
+                }
+              ]
+            },
+            "$[*].company": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].dateRaised": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?"
+                }
+              ]
+            },
+            "$[*].item": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].poitemnumber": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].ponumber": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].price": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ]
+            },
+            "$[*].quantity": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ]
+            },
+            "$[*].raisedBy": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].status": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].unit": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "transport": "https",
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "A request for all Non Approved POs",
+      "key": "fb299ac7",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "Non Approved POs exist"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/po/allNonApprovedPo"
+      },
+      "response": {
+        "body": {
+          "content": [
+            {
+              "company": "string",
+              "dateRaised": "3410-15-16T08:97:29.6",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "Awaiting-Approval",
+              "unit": "string"
+            },
+            {
+              "company": "string",
+              "dateRaised": "3410-15-16T08:97:29.6",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "Awaiting-Approval",
+              "unit": "string"
+            },
+            {
+              "company": "string",
+              "dateRaised": "3410-15-16T08:97:29.6",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "Awaiting-Approval",
+              "unit": "string"
+            }
+          ],
+          "contentType": "application/json; charset=UTF-8",
+          "encoded": false
+        },
+        "generators": {
+          "body": {
+            "$[*].company": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].dateRaised": {
+              "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?",
+              "type": "Regex"
+            },
+            "$[*].item": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].poitemnumber": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].ponumber": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].price": {
+              "max": 2147483647,
+              "min": 0,
+              "type": "RandomInt"
+            },
+            "$[*].quantity": {
+              "max": 2147483647,
+              "min": 0,
+              "type": "RandomInt"
+            },
+            "$[*].raisedBy": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].unit": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json; charset=UTF-8"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 3
+                }
+              ]
+            },
+            "$[*].company": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].dateRaised": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?"
+                }
+              ]
+            },
+            "$[*].item": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].poitemnumber": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].ponumber": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].price": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ]
+            },
+            "$[*].quantity": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ]
+            },
+            "$[*].raisedBy": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].status": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].unit": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "transport": "https",
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "A request to approve PO items",
+      "key": "95c125d",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "PO items to approve exist"
+        }
+      ],
+      "request": {
+        "body": {
+          "content": [
+            {
+              "poitemnumber": "PO1-01"
+            },
+            {
+              "poitemnumber": "PO1-02"
+            }
+          ],
+          "contentType": "application/json",
+          "encoded": false
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$[0].poitemnumber": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[1].poitemnumber": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          }
+        },
+        "method": "POST",
+        "path": "/api/po/approve"
+      },
+      "response": {
+        "status": 200
+      },
+      "transport": "https",
+      "type": "Synchronous/HTTP"
+    },
+    {
+      "description": "A request for all POs",
+      "key": "e6967c5f",
+      "pending": false,
+      "providerStates": [
+        {
+          "name": "POs exist"
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "path": "/api/po/all"
+      },
+      "response": {
+        "body": {
+          "content": [
+            {
+              "company": "string",
+              "dateRaised": "1194-50-81T97:79:12.128702",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "string",
+              "unit": "string"
+            },
+            {
+              "company": "string",
+              "dateRaised": "1194-50-81T97:79:12.128702",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "string",
+              "unit": "string"
+            },
+            {
+              "company": "string",
+              "dateRaised": "1194-50-81T97:79:12.128702",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "string",
+              "unit": "string"
+            },
+            {
+              "company": "string",
+              "dateRaised": "1194-50-81T97:79:12.128702",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "string",
+              "unit": "string"
+            },
+            {
+              "company": "string",
+              "dateRaised": "1194-50-81T97:79:12.128702",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "string",
+              "unit": "string"
+            },
+            {
+              "company": "string",
+              "dateRaised": "1194-50-81T97:79:12.128702",
+              "item": "string",
+              "poitemnumber": "string",
+              "ponumber": "string",
+              "price": 100,
+              "quantity": 100,
+              "raisedBy": "string",
+              "status": "string",
+              "unit": "string"
+            }
+          ],
+          "contentType": "application/json; charset=UTF-8",
+          "encoded": false
+        },
+        "generators": {
+          "body": {
+            "$[*].company": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].dateRaised": {
+              "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?",
+              "type": "Regex"
+            },
+            "$[*].item": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].poitemnumber": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].ponumber": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].price": {
+              "max": 2147483647,
+              "min": 0,
+              "type": "RandomInt"
+            },
+            "$[*].quantity": {
+              "max": 2147483647,
+              "min": 0,
+              "type": "RandomInt"
+            },
+            "$[*].raisedBy": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].status": {
+              "size": 20,
+              "type": "RandomString"
+            },
+            "$[*].unit": {
+              "size": 20,
+              "type": "RandomString"
+            }
+          }
+        },
+        "headers": {
+          "Content-Type": [
+            "application/json; charset=UTF-8"
+          ]
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 6
+                }
+              ]
+            },
+            "$[*].company": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].dateRaised": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?"
+                }
+              ]
+            },
+            "$[*].item": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].poitemnumber": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].ponumber": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].price": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ]
+            },
+            "$[*].quantity": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "number"
+                }
+              ]
+            },
+            "$[*].raisedBy": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].status": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].unit": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            }
+          },
+          "header": {
+            "Content-Type": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "regex",
+                  "regex": "application/json(;\\s?charset=[\\w\\-]+)?"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      },
+      "transport": "https",
+      "type": "Synchronous/HTTP"
+    }
+  ],
+  "metadata": {
+    "pact-jvm": {
+      "version": "4.6.10"
+    },
+    "pactSpecification": {
+      "version": "4.0"
+    }
+  },
+  "provider": {
+    "name": "POProvider"
+  }
+}
