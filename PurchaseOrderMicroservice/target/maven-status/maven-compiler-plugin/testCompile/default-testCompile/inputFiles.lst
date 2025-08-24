@@ -1,0 +1,9 @@
+/Users/luisgoate/Desktop/Corpus/SourceCode/PurchaseOrderMicroservice/src/test/java/com/example/POMicroservice/POMicroServiceApplicationTests.java
+/Users/luisgoate/Desktop/Corpus/SourceCode/PurchaseOrderMicroservice/src/test/java/com/example/POMicroservice/Pact/consumer/POConsumerPactTest.java
+/Users/luisgoate/Desktop/Corpus/SourceCode/PurchaseOrderMicroservice/src/test/java/com/example/POMicroservice/Pact/consumer/POTempConsumerPactTest.java
+/Users/luisgoate/Desktop/Corpus/SourceCode/PurchaseOrderMicroservice/src/test/java/com/example/POMicroservice/Pact/provider/POProviderPactTest.java
+/Users/luisgoate/Desktop/Corpus/SourceCode/PurchaseOrderMicroservice/src/test/java/com/example/POMicroservice/Pact/provider/POTempProviderPactTest.java
+/Users/luisgoate/Desktop/Corpus/SourceCode/PurchaseOrderMicroservice/src/test/java/com/example/POMicroservice/Services/POServiceIntegrationTest.java
+/Users/luisgoate/Desktop/Corpus/SourceCode/PurchaseOrderMicroservice/src/test/java/com/example/POMicroservice/Services/POServiceUnitTest.java
+/Users/luisgoate/Desktop/Corpus/SourceCode/PurchaseOrderMicroservice/src/test/java/com/example/POMicroservice/Services/POTempServiceIntegrationTest.java
+/Users/luisgoate/Desktop/Corpus/SourceCode/PurchaseOrderMicroservice/src/test/java/com/example/POMicroservice/Services/POTempServiceUnitTest.java

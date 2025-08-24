@@ -1,0 +1,9 @@
+com/example/POMicroservice/Pact/consumer/POConsumerPactTest.class
+com/example/POMicroservice/Pact/provider/POTempProviderPactTest.class
+com/example/POMicroservice/POMicroServiceApplicationTests.class
+com/example/POMicroservice/Services/POTempServiceUnitTest.class
+com/example/POMicroservice/Pact/provider/POProviderPactTest.class
+com/example/POMicroservice/Pact/consumer/POTempConsumerPactTest.class
+com/example/POMicroservice/Services/POServiceIntegrationTest.class
+com/example/POMicroservice/Services/POTempServiceIntegrationTest.class
+com/example/POMicroservice/Services/POServiceUnitTest.class
